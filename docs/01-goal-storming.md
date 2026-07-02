@@ -1,0 +1,238 @@
+# 01 — Goal Storming
+
+*The named collaborative practice at the heart of VDD. This document is the full facilitation guide: what it is, who's in the room, the cards, how to run a session start to finish, and where the output goes.*
+
+---
+
+## In one sentence
+
+**Goal Storming is a structured session that starts with goals — "what does success actually mean here?" — and derives verification standards, and optionally a shared concept and a constraint spec, directly from those goals.**
+
+It is the human-owned (now human-*and*-LLM) front of the VDD loop. Everything the agent later builds is downstream of what happens in this session.
+
+---
+
+## Where it sits in the flow
+
+```
+EVENT STORMING        (optional — only for new or unfamiliar domains)
+      ↓
+GOAL STORMING         ← you are here
+      ↓
+AGENT LOOP            (agent derives requirements → plan → tasks →
+                       implementation → verification report, and loops
+                       until the verification standards pass)
+```
+
+Goal Storming runs at **two scopes**, using the same practice either way:
+
+- **Project scope** — standing up a new project. Establishes the project's goals, its overarching verification posture, its guiding concept, and its constraints.
+- **Feature scope** — scoping one unit of work inside an existing project. Establishes that feature's goals and the verifications that prove it, inheriting the project's constraints.
+
+The altitude changes; the cards and the sequence do not.
+
+---
+
+## Why goals come first
+
+A user story already presumes someone decided what mattered. Goal Storming starts one level up: **what does success mean here, before we assume the shape of the solution?**
+
+Validations, Evaluations, Design Concepts, and Constraints are all *derived* from goals — they are different questions asked about the same underlying goal:
+
+- "What, concretely, proves we hit this goal — that a deterministic check can confirm?" → **Validation**
+- "What, about hitting this goal, requires judgment to assess?" → **Evaluation**
+- "What must any solution respect, regardless of approach?" → **Constraint**
+- "Can we say, in a breath, what this thing *is*?" → **Design Concept**
+
+If the goals are wrong, perfectly correct verifications just prove the wrong thing very precisely. **Getting the goals right is the most important — and most human — part of the session.**
+
+---
+
+## Who is in the room
+
+Humans own the goals. But the session is **not** human-only.
+
+> **Revision from the original brief.** An earlier framing said Goal Storming was "human-only, agent not present," and cast any LLM role as a note-taker/drafter. That is intentionally overridden here: **an LLM joins the session as a participant.**
+
+The LLM plays a **flexible role** — it can operate as either or both of:
+
+- **Peer participant** — proposes its own cards, offers goals the humans haven't voiced, drafts candidate validations and design concepts, and argues for them.
+- **Facilitator / challenger** — asks the sharpening questions, surfaces gaps ("goal 2 has no validation attached"), flags vague or unfalsifiable cards, and keeps the session moving through the sequence.
+
+> *Open point, deliberately left flexible:* whether a given team runs the LLM primarily as a peer, primarily as a facilitator, or fluidly as both is a per-team choice. This guide assumes the fluid case and notes where the two roles pull in different directions.
+
+**What the LLM does not do:** decide what ultimately matters. The humans retain authority over the GREEN cards. The LLM can *propose* a goal; it cannot *ratify* one. This is the one hard line — everything else in the session is genuinely collaborative.
+
+---
+
+## The cards
+
+Cards are the unit of the session. Each color answers a different question about the goals.
+
+| Color | Card type | Answers | Required? | Feeds |
+|--------|------------------------|-----------------------------------------------|------------------------|-----------------------------|
+| 🟩 GREEN | **Goals** | "What does success mean here?" | **Yes** — the spine | Referenced across all artifacts |
+| 🟨 YELLOW | **Validations** | "What deterministic check proves this goal?" | **Yes** — ≥1 per goal | `.feature` |
+| 🟦 BLUE | **Evaluations** | "What about this goal needs judgment to assess?"| When judgment is involved | `.rubric.md` |
+| 🟥 RED | **Negative validations** | "What must never happen?" | As needed | `.feature` |
+| ⬛ BLACK | **Constraints** | "What must any solution respect, regardless?" | As needed | `SPEC.md` |
+| 🟪 PURPLE | **Design Concepts** | "Can we say, in a breath, what this *is*?" | **Optional — but clarifying** | `SPEC.md` / `README.md` / `requirements.md` |
+
+### 🟩 GREEN — Goals
+
+The reason the work exists. Written as outcomes, not features. A good goal is something you could fail to achieve even with all the code written.
+
+- Good: *"A user who forgot their password can get back into their account without contacting support."*
+- Weak: *"Add a password reset endpoint."* (That's a task, not a goal — it presumes the solution.)
+
+Every other card should trace back to at least one goal. If a card doesn't serve a goal, either you're missing a goal or the card is scope creep.
+
+### 🟨 YELLOW — Validations
+
+Deterministic, binary, machine-checkable outcomes that prove a goal is met. These become Gherkin scenarios in a `.feature` file.
+
+- *"Given a valid reset token, when the user submits a new password, then they can log in with it."*
+
+If you can write an assertion for it, it's a validation.
+
+### 🟦 BLUE — Evaluations
+
+Outcomes that require judgment — no single correct answer. Summarization quality, tone, relevance, classification quality. These become criteria in a `.rubric.md` file, scored on a defined scale with a pass threshold.
+
+- *"The dispute summary captures the customer's core complaint without editorializing."* — scored, not asserted.
+
+Reach for BLUE only when a YELLOW card genuinely can't capture the outcome. Most goals are fully served by validations.
+
+### 🟥 RED — Negative validations
+
+The things that must **never** happen. Deterministic like YELLOW, but framed as prohibitions. They land in the same `.feature` file as guard scenarios.
+
+- *"An expired reset token must never grant access."*
+
+RED cards are where security, safety, and data-integrity requirements live.
+
+### ⬛ BLACK — Constraints
+
+What any solution must respect regardless of approach: architecture decisions, compliance boundaries, tooling limits, non-functional requirements. These are the residue that becomes `SPEC.md` — the constraint surface.
+
+- *"Must use the existing Postgres user store; no new datastore."*
+- *"Reset tokens expire within 15 minutes (compliance)."*
+
+BLACK cards are *constraints*, not designs. "Must run on Postgres" is a constraint; "here's the schema" is a design the agent derives.
+
+### 🟪 PURPLE — Design Concepts
+
+Optional, and often the most clarifying card on the board. A Design Concept is an attempt to **conceptualize the thing in a breath** — the project, a part of it, or a feature. It is a communication device, not a verification.
+
+- *"A self-service back door that's safe because it's time-boxed and single-use."*
+
+Its real value is diagnostic: **if the group (humans and LLM together) can't produce a crisp Design Concept, the goals usually aren't settled yet.** An easy, resonant concept is a signal of alignment; a struggle to write one is a signal to go back to the GREEN cards. Not required — but when it comes, keep it.
+
+---
+
+## Running a session
+
+A session moves through the cards roughly in this order. It is **iterative, not linear** — expect to loop back, especially between GREEN and YELLOW/BLUE.
+
+### 0. Frame the scope
+
+State plainly whether this is a **project** or a **feature** session, and for a feature session, name the project constraints it inherits. This decides where the output lands (see below).
+
+### 1. Surface the goals (GREEN)
+
+Ask the room — humans and LLM — *"What does success mean here?"* Put up goal cards. Merge duplicates, split compound goals, and cut anything that's really a task in disguise. **Don't move on until the humans agree the GREEN cards are right.** This is the gate.
+
+### 2. Derive verifications, one goal at a time (YELLOW → BLUE)
+
+Take each goal and ask: *"What, concretely, would prove we hit this?"*
+
+- If a deterministic check can confirm it → **YELLOW**.
+- If it needs judgment → **BLUE**.
+
+Attach every verification card to the goal it serves. **A goal with no verification is not done** — either write one or question whether it's really a goal. This traceability is the backbone of the whole method.
+
+### 3. Add the guardrails (RED)
+
+For each goal (and especially anything touching security, money, or data), ask: *"What must never happen?"* Put up RED cards.
+
+### 4. Capture the constraints (BLACK)
+
+Ask: *"What must any solution respect, no matter how we build it?"* Architecture, compliance, tooling, NFRs. Resist the urge to design — capture only the boundary, not the solution inside it.
+
+### 5. Try the concept (PURPLE) — optional
+
+Now that the goals and their verifications are on the board, attempt a Design Concept: *"Can we say, in a breath, what this is?"* Draft a few candidates (this is a great place to let the LLM riff), then pick or refine toward the one that's both **succinct and enticing**. If it won't come, note that and consider revisiting the goals.
+
+### 6. Read the board back
+
+Have someone — often the LLM — read the whole board as a narrative: "The goal is X; we'll know we hit it when Y and Z; it must never W; within constraints C; and the whole thing is, in a breath, P." If that story doesn't hang together, you're not done.
+
+### Exit criteria
+
+The session is done when:
+
+- [ ] Every GREEN goal is agreed by the humans.
+- [ ] Every goal carries at least one YELLOW or BLUE verification.
+- [ ] Known prohibitions are on RED cards.
+- [ ] Known constraints are on BLACK cards.
+- [ ] (Optional) A Design Concept exists, or the group has consciously decided to proceed without one.
+
+---
+
+## Where the cards go
+
+The board splits into artifacts. This mapping is what makes the output machine-consumable by the agent loop.
+
+```
+🟩 GREEN  Goals               → the spine. Captured as a short goals list at
+                                 the top of the target artifact (requirements.md
+                                 for a feature, SPEC.md/README.md for a project),
+                                 and referenced by the verification cards.
+
+🟨 YELLOW ┐
+          ├ Validations        → /features/[name].feature      (Validation layer)
+🟥 RED    ┘ + Negative
+
+🟦 BLUE   Evaluations          → /evaluations/[name].rubric.md  (Evaluation layer)
+
+⬛ BLACK  Constraints          → SPEC.md                         (Constraint layer)
+
+🟪 PURPLE Design Concepts      → scope-dependent communication device:
+                                   • project session → SPEC.md and/or README.md
+                                   • feature session → that feature's requirements.md
+```
+
+The Design Concept's endpoint follows the session's scope because it is fundamentally a **communication device** — it belongs wherever a reader meets the project or feature first. A project's concept is the hook at the top of the README; a feature's concept is the framing line atop its requirements.
+
+Everything below the constraint layer — `requirements.md`, `plan.md`, `tasks.md`, the implementation, and `verification-report.md` — is generated by the agent, not by the session.
+
+---
+
+## Common failure modes
+
+- **Tasks masquerading as goals.** "Add an endpoint" is not a goal. If it presumes the solution, it's below the goal line.
+- **Goals with no verification.** The most common gap. A goal you can't verify is a wish. Attach a YELLOW/BLUE card or reconsider the goal.
+- **Reaching for BLUE too early.** If a deterministic check can capture it, use YELLOW. Evaluations are for genuine judgment, not for things that were merely awkward to assert.
+- **Constraints written as designs.** BLACK cards are boundaries ("must use Postgres"), not schemas. Leave the inside of the boundary to the agent.
+- **Forcing the concept.** If a Design Concept won't come, don't manufacture one — treat the difficulty as feedback about the goals.
+- **Letting the LLM ratify goals.** The LLM proposes; humans decide what matters. Keep that line bright.
+
+---
+
+## A miniature example (feature scope)
+
+> **Feature:** password reset.
+>
+> - 🟩 **Goal:** a user who forgot their password can regain access without contacting support.
+> - 🟨 **Validation:** given a valid, unexpired token, submitting a new password lets the user log in with it.
+> - 🟥 **Negative:** an expired or already-used token must never grant access.
+> - ⬛ **Constraint:** tokens expire within 15 minutes; use the existing Postgres user store.
+> - 🟪 **Design Concept:** *"a self-service back door that's safe because it's time-boxed and single-use."*
+>
+> Output: the YELLOW + RED cards become `password-reset.feature`; the constraint reinforces `SPEC.md`; the concept opens `specs/password-reset/requirements.md`. No BLUE card — nothing here needs judgment.
+
+The fuller worked version of this lives in `/examples/password-reset/`.
+
+---
+
+*This document defines the practice as currently understood. Goal Storming — and especially the LLM's role within it and the weight of the Design Concept card — is still being refined; treat this as the working standard, not the final word.*
