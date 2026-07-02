@@ -144,12 +144,15 @@ Ask the room — humans and LLM — *"What does success mean here?"* Put up goal
 
 ### 2. Derive verifications, one goal at a time (YELLOW → BLUE)
 
-Take each goal and ask: *"What, concretely, would prove we hit this?"*
+Take each goal and ask: *"What, concretely, would prove we hit this?"* **This push is the heart of the session** — reach past the obvious, and try to find a verification even for the fuzzy goals. A verification can be any form that credibly proves the goal (a deterministic check, a scored rubric, or something creative — see the note below); the two card colors are just the two most common shapes.
 
 - If a deterministic check can confirm it → **YELLOW**.
 - If it needs judgment → **BLUE**.
+- If neither fits, invent the form that would — capture it and route it to whichever layer it resembles.
 
-Attach every verification card to the goal it serves. **A goal with no verification is not done** — either write one or question whether it's really a goal. This traceability is the backbone of the whole method.
+Attach each verification to the goal it serves. But **don't let a missing verification stop the session.** A goal you couldn't yet verify is a **known gap to revisit**, not a blocked goal — mark it and move on. The aim is to genuinely try; it's a journey toward a new way of building, not a checklist to complete. A goal verified partly beats a goal no one tried to verify.
+
+> **On the form of a verification.** YELLOW and BLUE are the two common shapes — a deterministic check and a scored rubric — but a verification is *whatever credibly proves the goal.* A round-trip reconstruction, an adversarial probe, a comparison against a reference, a human spot-check, or something no one's tried yet are all fair game; capture the creative ones and route them to whichever layer they most resemble. The one quality to strive for, whatever the form: **it should be able to fail.** A verification that can't tell a good result from a bad one proves nothing. (For the Evaluation side, `evaluation-guidelines.md` documents the common toolkit and leaves the door open for invention.)
 
 ### 3. Add the guardrails (RED)
 
@@ -172,7 +175,7 @@ Have someone — often the LLM — read the whole board as a narrative: "The goa
 The session is done when:
 
 - [ ] Every GREEN goal is agreed by the humans.
-- [ ] Every goal carries at least one YELLOW or BLUE verification.
+- [ ] Every goal has been *pushed on* for a verification — and either carries one, or is explicitly marked as a known gap to revisit. (Unverified goals are allowed; unexamined ones aren't.)
 - [ ] Known prohibitions are on RED cards.
 - [ ] Known constraints are on BLACK cards.
 - [ ] (Optional) A Design Concept exists, or the group has consciously decided to proceed without one.
@@ -211,7 +214,7 @@ Everything below the constraint layer — `requirements.md`, `plan.md`, `tasks.m
 ## Common failure modes
 
 - **Tasks masquerading as goals.** "Add an endpoint" is not a goal. If it presumes the solution, it's below the goal line.
-- **Goals with no verification.** The most common gap. A goal you can't verify is a wish. Attach a YELLOW/BLUE card or reconsider the goal.
+- **Not pushing for a verification.** The failure isn't leaving a goal unverified — that's an allowed gap. The failure is not *trying*: accepting a goal without asking "what would prove this?" Push first; if nothing fits yet, mark the gap and move on.
 - **Reaching for BLUE too early.** If a deterministic check can capture it, use YELLOW. Evaluations are for genuine judgment, not for things that were merely awkward to assert.
 - **Constraints written as designs.** BLACK cards are boundaries ("must use Postgres"), not schemas. Leave the inside of the boundary to the agent.
 - **Forcing the concept.** If a Design Concept won't come, don't manufacture one — treat the difficulty as feedback about the goals.

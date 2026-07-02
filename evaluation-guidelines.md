@@ -1,14 +1,13 @@
 # evaluation-guidelines.md
 
-*How to write a good `.rubric.md`. This is the standard for the **Evaluation**
+*How to write a good `.rubric.md`. This is guidance for the **Evaluation**
 technique, the judgment-based half of Verification. Its sibling,
 `gherkin-guidelines.md`, plays the same role for the **Validation** technique
 (`.feature` files).*
 
-*Unlike `gherkin-guidelines.md`, which is forked from an existing source, this
-guide is written from scratch — there is no upstream standard for evaluation
-rubrics to adapt. Treat it as the working standard, refined as the practice
-matures.*
+*Unlike `gherkin-guidelines.md`, which is forked from an existing source, this is
+written from scratch — there is no upstream standard for evaluation rubrics to
+adapt. Treat it as a working guide, not a rulebook, and expect it to evolve.*
 
 ---
 
@@ -22,200 +21,189 @@ VERIFICATION  ("what proves this is done?")
 
 Evaluation criteria come from Goal Storming's 🟦 BLUE cards. The verifier scores a
 feature's output against them and records the result in `verification-report.md`.
-A feature passes only when **both** layers meet their standard.
 
 ---
 
-## First: should this even be an evaluation?
+## The spirit before the mechanics
 
-The most common rubric mistake is writing one at all when a validation would do.
+Read this section first. The rest of this file is a toolkit; this is the point.
 
-**Reach for a rubric only when the outcome genuinely has no single correct answer.**
-Summarization quality, tone, relevance, classification judgment, helpfulness — these
-resist a deterministic assertion. If you can write an assertion that's either true
-or false, it belongs in a `.feature` file, not here.
+**A verification is whatever credibly proves a goal was hit.** The scored scales,
+the gates, the LLM-judge protocol, the evaluation sets below — those are *common,
+well-worn ways* to prove a judgment-based goal. They are a starting toolkit, **not
+the definition of an evaluation and not a required process.** If a goal is better
+proven by something not in this catalog — regenerating the input from the output and
+checking round-trip fidelity, an adversarial probe, a pairwise comparison against a
+reference answer, a quick human spot-check — **do that instead.** Inventing a fitting
+verification is squarely within the practice, not a deviation from it.
+
+**The exercise is the push.** The value of VDD is in genuinely trying to answer *"what
+would prove this?"* for each goal. Push hard on that question — reach past the obvious,
+try to find a verification even for the fuzzy goals. That push is where the method pays
+off.
+
+**But it doesn't gate.** You are allowed to define a goal and not yet have a
+verification for it. An unverified goal is a **known gap to revisit**, not a blocked
+state and not a failure. This isn't a 100%-buttoned-up process — it's a direction to
+build in. Mark the gap, keep moving, come back to it. A goal you can only *partly*
+verify, verified partly, still beats a goal no one tried to verify.
+
+**The north star, when you do write a verification: it should be able to fail.** A
+verification that can't distinguish a good result from a bad one proves nothing. This
+is a quality to strive for, not a gate to pass — but it's the single most useful thing
+to hold in mind while writing one.
+
+---
+
+## When to reach for an evaluation at all
+
+Prefer a deterministic **validation** whenever one is possible — it's cheaper and
+surer. Reach for an evaluation (this file) only when the outcome genuinely has no
+single correct answer: summarization quality, tone, relevance, classification
+judgment, helpfulness.
 
 A useful test: *two careful reviewers could score this differently and both be
 defensible.* If yes, it's an evaluation. If any competent reviewer would give the
-same binary answer, it's a validation — move it to the `.feature` file.
+same binary answer, it's a validation — put it in the `.feature` file.
 
-Corollary: **most features need no rubric at all.** A rubric is a cost — it needs a
-judge, a scale, and an evaluation set. Only pay it where judgment is unavoidable.
-When a hard, objective floor exists under a soft quality (e.g. a 150-word cap under
-"be concise"), put the floor in the `.feature` file and the softer quality here;
-they check different things and both can exist.
-
----
-
-## Anatomy of a well-formed criterion
-
-Every criterion must have three properties. A criterion missing any of them is not
-well-formed and should be rejected in review.
-
-### 1. Falsifiable
-
-You can state, concretely, what would make the criterion score low. If you can't
-name the evidence that would fail it, the judge can't apply it consistently and two
-runs will disagree.
-
-- ✅ *"Faithfulness: every claim in the summary is supported by the source."*
-  Falsifiable by pointing to a sentence with no support.
-- ❌ *"The summary is high quality."* Nothing to point at.
-
-Write a one-line **"Falsifiable by:"** clause on each criterion naming the evidence
-that would fail it. If you can't write that line, the criterion isn't ready.
-
-### 2. Scored on a defined scale
-
-The scale is stated, and **each level is described**, not left as a bare number. A
-judge given "score 0–5" with no anchors invents its own anchors and drifts. A judge
-given "4 = fully supported, at most a harmless paraphrase" applies a shared bar.
-
-Describe at least the threshold level and the levels adjacent to it — that's where
-scoring decisions actually happen.
-
-### 3. Explicit pass threshold
-
-State the score at which the criterion passes. "Faithfulness 0–5" is not a
-standard; "Faithfulness ≥ 4" is. Without a threshold there is no pass/fail, and the
-loop has no stop condition.
+**Most features need no rubric at all.** A rubric is a cost. Only pay it where
+judgment is unavoidable. When a hard objective floor exists under a soft quality
+(a 150-word cap under "be concise"), put the floor in the `.feature` file and the
+softer quality here — they check different things and both can exist.
 
 ---
 
-## Choosing a scale
+## The common toolkit
 
-Two scales cover nearly everything. Pick per criterion, not per file — a single
-rubric may mix them.
+These are the patterns that come up most often. Reach for one when it fits; combine
+them; ignore any that don't serve the goal; invent when none do.
 
-### 0–5 graded scale — for qualities that degrade gradually
+### Pattern — the scored criterion
 
-Use when a criterion can be *more or less* satisfied and partial credit is
-meaningful (faithfulness, completeness, conciseness, relevance).
+A named quality, scored on a scale, with a level of "good enough." The workhorse of
+most rubrics.
 
-Convention: `0` = absent or opposite, `3` = acceptable, `5` = exemplary. Set the
-threshold where "good enough to ship" actually sits — usually `≥ 4` for
-quality-critical criteria, `≥ 3` for nice-to-haves.
+- **0–5 graded scale** — for qualities that degrade *gradually* and where partial
+  credit is meaningful (faithfulness, completeness, conciseness, relevance).
+  Convention: `0` = absent/opposite, `3` = acceptable, `5` = exemplary.
+- Describe the levels, don't leave bare numbers. A judge given "score 0–5" invents
+  its own anchors and drifts; a judge given "4 = fully supported, at most a harmless
+  paraphrase" applies a shared bar. Describe at least the "good enough" level and its
+  neighbors — that's where scoring decisions actually happen.
+- Give it a **threshold** — the score at which it's good enough to ship. Without one,
+  there's no sense of pass, and the loop has no stop signal. (Set it where "good
+  enough" genuinely sits — often `≥ 4` for quality-critical qualities, `≥ 3` for
+  nice-to-haves.)
 
-### PASS / FAIL gate — for hard lines that must not be averaged away
+### Pattern — the PASS/FAIL gate
 
-Use when a single violation should block the feature regardless of how good
-everything else is (neutrality, safety, no-blame, no-verdict, policy compliance).
+For a hard line that must not be averaged away — a single violation should block
+regardless of how good everything else is (neutrality, safety, no-blame, no-verdict,
+policy compliance).
 
-The reason to make something a gate rather than a low-scoring criterion: **a gate
-is not averaged.** A rubric that scored neutrality 0–5 could let one blame-assigning
-summary hide inside a high mean. A gate fails the whole criterion on the first
-violation, which is the correct behavior for a hard line.
+The reason to make something a gate rather than a low score: **a gate is not
+averaged.** A quality scored 0–5 could let one bad instance hide inside a high mean;
+a gate fails on the first violation, which is the right behavior for a hard line.
 
-> Rule of thumb: if a single bad instance is unacceptable, it's a gate. If quality
-> is a matter of degree, it's a 0–5 score.
+> Rule of thumb: if a single bad instance is unacceptable → gate. If quality is a
+> matter of degree → scored scale.
+
+### Pattern — the judge protocol
+
+When something (usually an LLM) is scoring the output, say how:
+
+- **Who/what judges** — LLM-as-judge, human reviewer, or LLM with human override.
+- **What the judge sees** — the source input and the produced output, and usually
+  *not* the threshold values (showing the judge the pass bar anchors it toward the
+  bar; score first, compare after).
+- **Determinism caveat** — judgment scores vary run to run. Design for it rather than
+  pretending scores are stable.
+
+### Pattern — score over a set, not one case
+
+One lucky output isn't a standard. Where you can, score over a **fixed set** of
+representative cases (happy path, hard cases, adversarial cases). Then: scored
+criteria pass on the **mean over the set**; gates pass only when **every case
+passes**.
+
+### Other forms worth knowing (non-exhaustive)
+
+When the scored-criterion pattern doesn't fit the goal, these often do — and this
+list is itself just a prompt, not a boundary:
+
+- **Round-trip / reconstruction** — can the source be recovered from the output? Good
+  for summaries, compressions, translations.
+- **Pairwise / reference comparison** — is output A better than a baseline, or close
+  enough to a gold reference? Good when absolute scoring is hard but comparison is easy.
+- **Adversarial probe** — does a skeptic trying to break the output succeed? Good for
+  safety and robustness.
+- **Human spot-check** — a lightweight human read on a sample. Legitimate, especially
+  early, when you don't yet trust an automated judge.
 
 ---
 
-## The judge protocol
+## A recommended shape (when you use scored criteria)
 
-State, in the rubric, **how criteria get scored**. At minimum:
-
-- **Who/what judges.** LLM-as-judge, human reviewer, or LLM with human override.
-  Default to LLM-as-judge with human override available.
-- **What the judge sees.** The source input and the produced output — and,
-  importantly, **not the threshold values.** Showing the judge the pass bar anchors
-  it toward the bar. Score first, compare to threshold second.
-- **Determinism caveat.** Judgment scores vary run to run. Acknowledge it and
-  design the pass condition to tolerate it (below), rather than pretending scores
-  are stable.
-
----
-
-## Evaluate over a set, not a single case
-
-A rubric scored on one example proves almost nothing — one lucky output isn't a
-standard. Score each criterion over a **fixed evaluation set** of representative
-cases (happy path, hard cases, adversarial cases).
-
-The aggregate pass condition then reads:
-
-- **Graded (0–5) criteria** pass when the **mean over the set** meets the threshold.
-- **Gate (PASS/FAIL) criteria** pass only when **every case passes** — one failure
-  anywhere fails the gate. Gates are never averaged.
-
-Write the aggregate condition explicitly in the rubric as a checklist, so the
-verifier and the loop share one definition of "the Evaluation layer passed."
-
----
-
-## File organization
-
-- **One `.rubric.md` per feature**, living in `/evaluations/[feature-name].rubric.md`.
-  It carries all of that feature's evaluation criteria — multiple criteria, mixed
-  scales, in one cohesive file. (Split into multiple files only if one feature's
-  rubric genuinely becomes unwieldy; cohesion is the default.)
-- **Header** should name what's being evaluated and reference this guide.
-- **Only exists when needed.** A pure-Validation feature has no rubric at all — its
-  `verification-report.md` shows an empty Evaluation section by design.
-
-### Recommended criterion template
+If you do reach for the scored-criterion pattern, this shape travels well:
 
 ```
 ### E{n} — {Name}  *(scale: 0–5, threshold ≥ {t}   |   or: PASS / FAIL)*
 
 {One sentence: what this criterion judges.}
 
-| Score | Meaning |          ← for 0–5: describe the threshold level and its
-|-------|---------|            neighbors, at least
+| Score | Meaning |          ← describe the threshold level and its neighbors
+|-------|---------|
 | 5 | … |
 | {t} | … |
 | ≤{t-1} | … |
 
-*Falsifiable by:* {the evidence that would fail it}
+*Could fail if:* {name the evidence that would score it low}
 ```
 
-Close the file with an **Aggregate pass condition** checklist covering every
-criterion and its threshold.
+The *"Could fail if:"* line is the most valuable habit here — it's how you check a
+criterion can actually fail before you rely on it. Close the file with an **aggregate
+pass condition** so the verifier and the loop share one definition of "the Evaluation
+layer passed for now."
+
+### File organization
+
+- **One `.rubric.md` per feature**, in `/evaluations/[feature-name].rubric.md`,
+  carrying that feature's criteria — multiple criteria, mixed scales, in one cohesive
+  file is fine. Split only if it genuinely gets unwieldy.
+- **Only exists when needed.** A pure-Validation feature has no rubric — its
+  `verification-report.md` shows an empty Evaluation section by design.
 
 ---
 
-## Criterion hygiene
+## Habits worth keeping
 
-- **Independence.** Criteria should measure different things. If E1 and E3 rise and
-  fall together, merge them or sharpen the distinction — correlated criteria give a
-  false sense of coverage.
-- **Traceability.** Each criterion should trace to a goal (🟩) via a BLUE card, and
-  be referenced by a requirement in the feature's `requirements.md`. A criterion
-  serving no goal is scope creep.
-- **No deterministic criteria in disguise.** If a "criterion" is really an
-  assertion ("is under 150 words"), it belongs in the `.feature` file. Don't spend
-  a judge on something a check can settle.
+Not rules — habits that make a verification more trustworthy:
 
----
+- **Try to make it able to fail.** If you can't picture what would score it low, it
+  probably can't distinguish good from bad yet. (See the north star, above.)
+- **Independence.** Criteria should measure different things. If two rise and fall
+  together, merge them or sharpen the distinction.
+- **Traceability.** A criterion ideally traces to a goal (🟩) and is referenced by a
+  requirement. A criterion serving no goal is probably scope creep.
+- **Don't put deterministic checks here.** If it's really an assertion ("under 150
+  words"), it belongs in the `.feature` file — don't spend a judge on it.
+- **Don't average a hard line.** If one violation is unacceptable, make it a gate.
+- **Don't force a rubric onto a deterministic outcome** — prefer the `.feature` file.
 
-## Anti-patterns
-
-- **Vibe criteria** — "is high quality", "feels right." Not falsifiable. Reject.
-- **Numbers without anchors** — a 0–5 scale whose levels aren't described. The judge
-  drifts. Describe the levels.
-- **Missing threshold** — a scale with no pass bar. There's no stop condition.
-- **Averaging a hard line** — scoring neutrality/safety 0–5 so one violation hides
-  in the mean. Make it a gate.
-- **Single-case scoring** — declaring the layer passed on one good output. Score
-  over a set.
-- **Anchoring the judge** — handing the judge the threshold. Score blind, compare
-  after.
-- **Rubric for a deterministic outcome** — reaching for Evaluation where Validation
-  would settle it. Prefer the `.feature` file.
+These are things to *strive for*. A rubric that misses some of them is still worth
+having if it makes you push on "what would prove this?"
 
 ---
 
 ## Worked example
 
-`examples/dispute-summary/evaluations/dispute-summary.rubric.md` is written to this
-guide: four criteria (three 0–5, one PASS/FAIL gate), each with described levels, a
-"Falsifiable by" clause, a stated threshold, a judge protocol that withholds the
-thresholds from the judge, and an aggregate pass condition scored over a 12-dispute
-set. Its `verification-report.md` shows the loop reacting to a sub-threshold mean
-(E3) and a gate failure (E2) — the two distinct failure shapes this guide predicts.
+`examples/dispute-summary/evaluations/dispute-summary.rubric.md` shows one good
+instance built from this toolkit: four scored/gated criteria with described levels and
+"could fail if" lines, a judge protocol that withholds thresholds, and a set-based
+pass condition. It's *an* example of these patterns in use — not the required form. A
+different feature might prove its goal a completely different way.
 
 ---
 
-*This guide defines the Evaluation standard as currently understood. It is the
-newest and least-settled artifact in VDD — expect it to evolve as more rubrics are
-written against it.*
+*This guide is the newest and least-settled artifact in VDD. It documents what has
+worked so far and deliberately leaves room to invent what hasn't been tried yet.*

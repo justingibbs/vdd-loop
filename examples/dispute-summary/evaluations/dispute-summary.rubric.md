@@ -5,8 +5,10 @@
 criteria are **scored by judgment** — an LLM-as-judge or a human reviewer — because
 the outcomes have no single correct answer.*
 
-*Written to the standard in `evaluation-guidelines.md`: every criterion is
-falsifiable, scored on a defined scale, and carries an explicit pass threshold.*
+*Built from the toolkit in `evaluation-guidelines.md`. This is **one** way to prove
+this feature's goal — scored criteria plus a gate, chosen because they fit summary
+quality well. A different feature might prove its goal a completely different way;
+nothing here is the required form.*
 
 ---
 
@@ -30,8 +32,8 @@ on?
 
 ## Scales used in this file
 
-This rubric mixes two scales in one file, deliberately (see *Design stance* at the
-bottom):
+This rubric happens to mix two scales in one file — a fit for this feature, not a
+prescription:
 
 - **0–5 quality scale** for graded qualities. `0` = absent/opposite, `3` =
   acceptable, `5` = exemplary.
@@ -54,7 +56,7 @@ invented amounts, dates, parties, or motivations.
 | 3 | One minor unsupported detail that doesn't change routing. |
 | ≤2 | An invented or materially distorted fact. |
 
-*Falsifiable by:* pointing to a sentence in the summary with no support in the source.
+*Could fail if:* a sentence in the summary has no support in the source.
 
 ### E2 — Neutrality  *(scale: PASS / FAIL)*
 
@@ -82,7 +84,7 @@ disputed, the amount, the date, and the customer's stated reason.
 | 3 | One routing fact missing but inferable from context. |
 | ≤2 | A routing fact missing and not inferable — reviewer must open the file. |
 
-*Falsifiable by:* naming a routing fact a reviewer would still have to look up.
+*Could fail if:* a routing fact is one a reviewer would still have to look up.
 
 ### E4 — Conciseness  *(scale: 0–5, threshold ≥ 3)*
 
@@ -113,13 +115,12 @@ the layer — the gate is not averaged.
 
 ---
 
-## Design stance (resolves a brief open question)
+## Why this shape, for this feature
 
-The brief asked: *should a `.rubric.md` support multiple criteria with different
-scales (0–5 vs pass/fail) in one file, or one criterion per file?* This example
-takes the position: **one file per feature, multiple criteria, mixed scales
-allowed** — graded qualities use 0–5, hard lines use PASS/FAIL gates. The file
-stays cohesive (one feature's judgment standard in one place) while still letting a
-non-negotiable quality act as a gate rather than a number that can be averaged
-away. If practice shows this gets unwieldy, splitting is the fallback — but the
-default is cohesion.
+A note on one choice, not a rule for all rubrics: this file keeps all four criteria
+together, mixing 0–5 scores with a PASS/FAIL gate, because one feature's judgment
+standard reads well in one place — and a hard line (neutrality) gets to act as a gate
+rather than a number that can be averaged away. That's what fit here. Another feature
+might use a single criterion, or a pairwise comparison, or a round-trip check, or
+something not yet invented. The toolkit in `evaluation-guidelines.md` is a starting
+point; the goal is to prove *this* goal, however that's best done.

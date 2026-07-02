@@ -35,8 +35,10 @@ it's scope creep and should be removed.
 
 ## Functional requirements
 
-Each requirement names the `.feature` scenario that verifies it. A requirement
-with no verifying scenario is not "done" — it's a wish.
+Each requirement names the `.feature` scenario that verifies it. The aim is that
+every requirement is backed by a verification — and in this feature, every one is.
+Where a verification can't be found yet, that's a known gap to revisit, not a
+blocker.
 
 | # | Requirement | Verified by (scenario) |
 |---|-------------|------------------------|
