@@ -21,7 +21,7 @@ Copyright © 2026 Justin Gibbs.
 | `/templates/**` | Apache-2.0 |
 | `/examples/**` | Apache-2.0 |
 | `/docs/**` | CC BY 4.0 |
-| `README.md`, `METHODOLOGY.md`, `PROJECT_BRIEF.md` | CC BY 4.0 |
+| `README.md`, `METHODOLOGY.md`, `PROJECT_BRIEF.md`, `HANDOFF.md` | CC BY 4.0 |
 | `evaluation-guidelines.md` | CC BY 4.0 |
 | `gherkin-guidelines.md` | MIT (see Third-party material) |
 
