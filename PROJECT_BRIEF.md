@@ -65,6 +65,13 @@ GOAL STORMING  (the named collaborative practice — replaces
   A structured session (human-only, agent not present) that
   starts with goals and derives verification artifacts from them.
 
+  [SUPERSEDED — see docs/01-goal-storming.md] The "human-only,
+  agent not present" framing has since been revised: an LLM now
+  joins the session as a participant (peer and/or facilitator),
+  while humans retain sole authority to ratify goals. The
+  goal-storming doc is the current word; this brief is kept as a
+  historical snapshot.
+
   Card types:
     GREEN  → Goals          "What does success mean here?"
     YELLOW → Validations    Deterministic, testable outcomes
@@ -248,10 +255,11 @@ vdd-loop/
 │   │   └── SKILL.md             ← Scaffold a new VDD project
 │   ├── /goal-storming-facilitator/
 │   │   └── SKILL.md             ← Agent assists running a Goal
-│   │                               Storming session (NOT a
-│   │                               replacement for the human
-│   │                               session — a note-taker/
-│   │                               drafter role)
+│   │                               Storming session. [SUPERSEDED —
+│   │                               the LLM is now a session
+│   │                               participant (peer/facilitator),
+│   │                               not just a note-taker; see
+│   │                               docs/01-goal-storming.md]
 │   ├── /feature-implement/
 │   │   └── SKILL.md             ← Core loop skill. Reads .feature
 │   │                               + .rubric.md, generates working
