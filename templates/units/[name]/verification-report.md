@@ -2,18 +2,17 @@
   verification-report.md — TEMPLATE (verifier-generated in practice).
 
   Written at the end of each loop run. Reports pass/fail per .feature scenario and,
-  where a rubric exists, per criterion. For a pure-Validation feature, the
-  Evaluation section is empty by design. Report specifics on any failure: which
-  scenario/criterion, what was attempted, what's needed.
+  where @eval lines exist, per criterion. For a pure-Validation unit, the Evaluation
+  section is empty by design. Report specifics on any failure.
 
   Delete these comments once filled in.
 -->
 
-# verification-report.md — [feature-name]
+# verification-report.md — [unit-name]
 
-**Feature:** [feature-name]
-**Verification standard:** `[feature-name].feature` ([n] scenarios)[ + `[feature-name].rubric.md` ([m] criteria)]
-**Evaluation set:** [N representative cases — only if there's a rubric]
+**Unit:** [unit-name]
+**Verification standard:** `[name].feature` ([n] scenarios[ + [m] `@eval` criteria])
+**Evaluation set:** [N representative cases — only if @eval criteria exist]
 **Result:** [✅ PASS | ❌ FAIL] — [summary, e.g. "Validation n/n, Evaluation m/m on iteration 2"]
 
 ---
@@ -24,13 +23,14 @@
 |----------|:------:|:------:|
 | [scenario title] | [✅/❌] | [✅/❌] |
 
-## Evaluation layer — `.rubric.md` criteria
+## Evaluation layer — `@eval` criteria
 
-<!-- If the feature has no rubric, state that here and leave the table out. -->
+<!-- If the unit has no @eval lines, state "no Evaluation layer" and leave the
+     table out. -->
 
 | Criterion | Scale | Threshold | Iter 1 | Iter 2 |
 |-----------|-------|-----------|:------:|:------:|
-| [E1 name] | [0–5 / gate] | [≥ t / PASS] | [score] | [score] |
+| [E1 name] | [0–5 / PASS/FAIL] | [≥ t / PASS] | [score] | [score] |
 
 ---
 
@@ -46,4 +46,4 @@
 ## Stop condition
 
 [Both layers meet their standard → loop halts. OR: a stop condition was hit — say
-which. Note whether a schema-change-proposal.md was needed.]
+which (PAUSE / GIVE-UP). Note whether a schema-change-proposal.md was needed.]

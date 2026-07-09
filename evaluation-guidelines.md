@@ -15,12 +15,18 @@ adapt. Treat it as a working guide, not a rulebook, and expect it to evolve.*
 
 ```
 VERIFICATION  ("what proves this is done?")
-├── Validation  (deterministic, binary)  → .feature   ← gherkin-guidelines.md
-└── Evaluation  (scored, judgment-based) → .rubric.md  ← THIS GUIDE
+├── Validation  (deterministic, binary)  → .feature          ← gherkin-guidelines.md
+└── Evaluation  (scored, judgment-based) → @eval lines in .feature
+                                           + optional .rubric.md  ← THIS GUIDE
 ```
 
-Evaluation criteria come from Goal Storming's 🟦 BLUE cards. The verifier scores a
-feature's output against them and records the result in `verification-report.md`.
+Evaluation criteria come from Goal Storming's 🟦 BLUE cards. They live as `@eval`
+comment lines directly in the `.feature` file — one line per criterion, inline with
+the deterministic scenarios. A separate `.rubric.md` is optional expansion for
+criteria whose anchor descriptions can't fit inline. The verifier reads both and
+records the result in `verification-report.md`.
+
+See **Inline evaluation: the `@eval` convention** below for the exact format.
 
 ---
 
@@ -167,11 +173,93 @@ layer passed for now."
 
 ### File organization
 
-- **One `.rubric.md` per feature**, in `/evaluations/[feature-name].rubric.md`,
-  carrying that feature's criteria — multiple criteria, mixed scales, in one cohesive
-  file is fine. Split only if it genuinely gets unwieldy.
-- **Only exists when needed.** A pure-Validation feature has no rubric — its
-  `verification-report.md` shows an empty Evaluation section by design.
+Evaluation criteria live in the `.feature` file, not a separate file by default:
+
+- **Inline `@eval` lines in the `.feature`** — the primary home for all evaluation
+  criteria. One line per criterion, placed after the Feature description block,
+  before the first Scenario. This is what makes the `.feature` the complete
+  verification standard for a unit.
+- **Optional `.rubric.md`** — for criteria whose anchor descriptions, judge
+  protocol, or evaluation-set instructions can't fit in a line or two. Pointed to
+  from the `@eval-detail` line in the `.feature`. Lives in the unit folder alongside
+  the `.feature`.
+- **Only a `.rubric.md` exists when a criterion genuinely needs it.** Many
+  evaluation criteria — especially simple gates — need nothing beyond an `@eval`
+  line. A pure-Validation feature has neither `@eval` lines nor a `.rubric.md`; its
+  `verification-report.md` notes "no Evaluation layer" by design.
+
+---
+
+## Inline evaluation: the `@eval` convention
+
+Evaluation criteria are written as `#` comment lines in the `.feature` file.
+Gherkin parsers skip comments, so the file remains executable without modification.
+
+### Format
+
+```
+# @eval | <id> | <name> | <scale> | <threshold> | <description>
+# @eval-detail | <relative-path-to-rubric.md>
+```
+
+**Fields** (all required on every `@eval` line):
+
+| Field | Rules | Examples |
+|---|---|---|
+| `id` | Alphanumeric, unique within the file, no spaces | `E1`, `faithfulness`, `tone` |
+| `name` | 2–4 words; used as the column header in the verification report | `Faithfulness`, `Tone gate` |
+| `scale` | Exactly one of: `0-5`, `0-10`, `PASS/FAIL`, `0-100` | `0-5`, `PASS/FAIL` |
+| `threshold` | `≥N` for numeric scales; `PASS` for PASS/FAIL | `≥4`, `≥3`, `PASS` |
+| `description` | One sentence: what the judge is assessing. What the judge sees. | `Summary uses only facts from source` |
+
+**`@eval-detail`** (optional): points to a `.rubric.md` for anchor descriptions,
+judge protocol, or a multi-case evaluation set. The parser trims whitespace around
+` | ` separators — field values do not need to be aligned.
+
+### Placement
+
+Place `@eval` lines after the Feature description block (the `As a / I want / So
+that` lines), before the first `Scenario`. Reading order: intent → what gets
+judged → deterministic scenarios.
+
+### Examples
+
+Criterion with a pointer to a detail rubric:
+
+```gherkin
+Feature: Dispute summary
+  As a reviewer
+  I want a concise summary of a dispute
+  So that I can route it without reading the full case file
+
+  # @eval | E1 | Faithfulness  | 0-5       | ≥4   | Summary uses only facts present in the source case file
+  # @eval | E2 | Neutrality    | PASS/FAIL | PASS | Summary attributes claims without assigning blame or verdict
+  # @eval | E3 | Routing facts | 0-5       | ≥4   | Summary contains what, amount, date, and customer reason
+  # @eval | E4 | Conciseness   | 0-5       | ≥3   | No filler or restatement beyond what aids routing
+  # @eval-detail | dispute-summary.rubric.md
+
+  Scenario: Summary stays within length cap
+    ...
+```
+
+Simple gate — no pointer needed:
+
+```gherkin
+Feature: Email notifications
+
+  # @eval | tone | Tone | PASS/FAIL | PASS | Notification reads naturally, not robotic or mechanical
+
+  Scenario: Welcome email sends on registration
+    ...
+```
+
+### When a unit has multiple `.feature` files
+
+When a unit folder holds several `.feature` files (`auth.feature`,
+`loading.feature`, etc.), `@eval` lines belong in whichever file the criterion
+naturally concerns. `verification-report` scans all `.feature` files in the unit
+folder to collect the full Evaluation picture — no duplication, no designated
+"primary" file.
 
 ---
 
@@ -197,7 +285,7 @@ having if it makes you push on "what would prove this?"
 
 ## Worked example
 
-`examples/dispute-summary/evaluations/dispute-summary.rubric.md` shows one good
+`examples/dispute-summary/dispute-summary.rubric.md` shows one good
 instance built from this toolkit: four scored/gated criteria with described levels and
 "could fail if" lines, a judge protocol that withholds thresholds, and a set-based
 pass condition. It's *an* example of these patterns in use — not the required form. A

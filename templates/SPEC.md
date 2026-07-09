@@ -9,7 +9,7 @@
     1. VERSIONED — bump the version on every change (see header).
     2. PROTECTED — the agent must NEVER edit this file without explicit human
        approval. If a feature needs a SPEC change, the agent writes
-       specs/<feature>/schema-change-proposal.md and PAUSES for review.
+       units/<name>/schema-change-proposal.md and PAUSES for review.
        (That rule is restated in CLAUDE.md, where the agent will read it.)
 
   Format guidance: Markdown for narrative sections; YAML for deeply nested

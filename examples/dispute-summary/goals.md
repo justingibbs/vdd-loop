@@ -1,0 +1,29 @@
+# goals.md — dispute-summary
+
+## Goals
+
+- 🟩 G1: A dispute reviewer can grasp what a dispute is about, and decide how to
+  route it, without opening the full case file.
+
+## Verification intent
+
+- G1 (deterministic): The summary exists, references the case id, stays within the
+  length budget, leaks no PII, and fails closed on incomplete input. Binary outcomes
+  a BDD runner can confirm. → YELLOW + RED scenarios in `dispute-summary.feature`.
+- G1 (judgment): The summary is faithful, neutral, complete enough to route on, and
+  concise — qualities no assertion can confirm because they require a reader's
+  judgment. → `@eval` lines in `dispute-summary.feature`, with anchor descriptions
+  in `dispute-summary.rubric.md`.
+
+Neither layer alone proves the goal. A summary can pass every `.feature` scenario
+and still be useless if it's unfaithful or takes a side — which is what the
+`@eval` criteria guard.
+
+## Design Concept *(🟪)*
+
+> *"A neutral one-breath brief that lets a reviewer route a dispute without opening the case file."*
+
+## Constraints *(⬛ from SPEC.md)*
+
+- PII handling: full PANs must never appear in generated text.
+- The summary is decision-support only; it must not state a resolution or verdict.

@@ -20,23 +20,27 @@ touching code or verification artifacts.
 
 This project uses **Verification-Driven Development**. The short version of the loop:
 
-1. Read the verification standard for the feature: its `.feature` file (Validation)
-   and, if present, its `.rubric.md` (Evaluation), plus `SPEC.md` for constraints.
-2. Derive `requirements.md` → `plan.md` → `tasks.md` under `specs/<feature>/`.
+1. Read the verification standard: the unit's `.feature` file(s) (Validation
+   scenarios + `@eval` Evaluation criteria) and `SPEC.md` for constraints. If an
+   `@eval-detail` pointer exists, load the linked `.rubric.md` for anchor descriptions.
+2. Derive `requirements.md` → `plan.md` → `tasks.md` in `units/<name>/`.
 3. Implement.
 4. **Validate** deterministically against every `.feature` scenario.
-5. **Evaluate** against `.rubric.md` criteria where one exists.
-6. Write `specs/<feature>/verification-report.md`.
+5. **Evaluate** against `@eval` criteria where they exist (and `.rubric.md` anchors
+   where linked).
+6. Write `units/<name>/verification-report.md`.
 7. Loop until both layers meet their standard, or a stop condition is hit.
 
-The `.feature` and `.rubric.md` files are the source of truth. Everything under
-`specs/<feature>/` is agent-owned scaffolding — you have full freedom there.
+The `.feature` file is the source of truth — it contains both the Validation
+scenarios and the `@eval` Evaluation criteria. A `.rubric.md` may exist as optional
+detail expansion for rich criteria; it is equally read-only. Everything else in
+`units/<name>/` is agent-owned scaffolding — full freedom there.
 
 ## SPEC.md is protected
 
 **Never edit `SPEC.md` without explicit human approval.** It is versioned and
 protected. If a feature requires a change to `SPEC.md` (a new constraint, a data
-model change, an ADR), do not edit it — write `specs/<feature>/schema-change-proposal.md`
+model change, an ADR), do not edit it — write `units/<name>/schema-change-proposal.md`
 describing the needed change and **pause for human review.**
 
 ## Verification guides
@@ -64,6 +68,10 @@ patterns and leave room to invent. Strive to make every verification *able to fa
 ## Where things live
 
 - `SPEC.md` — project constraints, architecture, versioned & protected.
-- `/features/*.feature` — the Validation layer, one file per user story.
-- `/evaluations/*.rubric.md` — the Evaluation layer (only where judgment is needed).
-- `/specs/<feature>/` — agent-generated working docs and the verification report.
+- `units/<name>/` — one folder per unit of work (named like a branch: `password-reset`,
+  `initial-build`). Contains everything for that unit:
+  - `goals.md` — goals and verification intent.
+  - `<name>.feature` — Validation scenarios + `@eval` Evaluation criteria (source of truth).
+  - `<name>.rubric.md` — optional Evaluation detail (anchor descriptions, judge protocol).
+  - `requirements.md`, `plan.md`, `tasks.md` — agent-generated working docs.
+  - `verification-report.md` — verifier output, updated each loop iteration.

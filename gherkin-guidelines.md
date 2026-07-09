@@ -3,7 +3,7 @@
 *How to write a good `.feature` file. This is guidance for the **Validation**
 technique, the deterministic half of Verification. Its sibling,
 `evaluation-guidelines.md`, plays the same role for the **Evaluation** technique
-(`.rubric.md` files).*
+(`@eval` lines in `.feature` files, with optional `.rubric.md` detail).*
 
 > **Provenance.** This file is **forked and adapted** from
 > [AutomationPanda/gherkin-guidelines-for-ai](https://github.com/AutomationPanda/gherkin-guidelines-for-ai)
@@ -19,8 +19,9 @@ technique, the deterministic half of Verification. Its sibling,
 
 ```
 VERIFICATION  ("what proves this is done?")
-├── Validation  (deterministic, binary)  → .feature   ← THIS GUIDE
-└── Evaluation  (scored, judgment-based) → .rubric.md  ← evaluation-guidelines.md
+├── Validation  (deterministic, binary)  → .feature            ← THIS GUIDE
+└── Evaluation  (scored, judgment-based) → @eval lines in .feature ← evaluation-guidelines.md
+                                           (+ optional .rubric.md detail)
 ```
 
 In VDD a `.feature` file is not a spec of what to build — it's the **deterministic
@@ -58,11 +59,11 @@ tight, behavior-focused, independently-runnable scenario.
 ## Files and organization
 
 - Put Gherkin in `*.feature` files, **kebab-case** named.
-- In VDD, **one `.feature` file per user story**, in `/features/[feature-name].feature`.
-  It holds all scenarios for that story — happy path, failure cases, edge cases.
-- One `Feature` block per file, maximum.
-- Group feature files in a features directory; subdirectories by functional area are
-  fine when the project grows.
+- In VDD, `.feature` files live in `units/[name]/[name].feature`. Large units may
+  split across multiple `.feature` files by capability area — all live in the same
+  unit folder. One `Feature` block per file, maximum.
+- The unit folder also holds `goals.md`, `@eval`-annotated `.feature` files, an
+  optional `.rubric.md`, and the agent working docs. Everything for a unit in one place.
 
 ---
 
@@ -74,10 +75,10 @@ tight, behavior-focused, independently-runnable scenario.
 - One blank line between adjacent scenarios and between major sections. **No** blank
   lines between the steps within a scenario.
 - **Minimize comments** — the Gherkin should read for itself.
-  - *VDD adaptation:* a short **header comment** tying the file to its 🟩 GREEN goal
-    (and noting whether an accompanying `.rubric.md` exists) is encouraged for
-    traceability — this is the one comment worth keeping. Keep scenario bodies
-    comment-free.
+  - *VDD adaptation:* a short **header comment** tying the file to its 🟩 GREEN goal,
+    followed by any `@eval` lines for the Evaluation layer, is the standard header
+    form — see the recommended template below. This is the one comment block worth
+    keeping. Keep scenario bodies comment-free.
 
 ---
 
@@ -200,14 +201,14 @@ can pass while the bad thing quietly happened.
 
 ## The boundary with the Evaluation layer
 
-Keep deterministic checks here and judgment-based ones in the rubric. The two can
+Keep deterministic checks here and judgment-based ones as `@eval` lines. The two can
 describe the *same* output at different altitudes:
 
-- *"The summary is 150 words or fewer"* → deterministic → **`.feature`** (here).
-- *"The summary is concise — no filler"* → judgment → **`.rubric.md`**.
+- *"The summary is 150 words or fewer"* → deterministic → **scenario in this file**.
+- *"The summary is concise — no filler"* → judgment → **`@eval` line in this file**.
 
 If a `Then` can't be settled the same way by any competent checker, it's probably an
-evaluation, not a validation. Move it. (See `evaluation-guidelines.md`.)
+evaluation, not a validation. Move it to an `@eval` line. (See `evaluation-guidelines.md`.)
 
 ---
 
@@ -229,12 +230,16 @@ evaluation, not a validation. Move it. (See `evaluation-guidelines.md`.)
 ## Recommended template
 
 ```gherkin
-# feature-name.feature
+# [name].feature
 #
-# Validation layer for [feature]. Scenarios are YELLOW (validation) and RED
-# (negative validation) cards from Goal Storming.
-# Goal (GREEN): [the one-line goal this feature proves].
-# Rubric: [none | evaluations/feature-name.rubric.md]
+# Verification standard for [unit]. Scenarios come from Goal Storming's YELLOW
+# (validation) and RED (negative validation) cards.
+# Goal (GREEN): [the one-line goal this unit proves]
+#
+# @eval | E1 | [Name] | [0-5 | PASS/FAIL] | [≥N | PASS] | [one sentence: what is judged]
+# @eval-detail | [name].rubric.md  ← include only when criteria need anchor descriptions
+#
+# (Remove @eval lines if the unit has no BLUE cards — purely deterministic.)
 
 Feature: [Behavior area]
   As a [role]
@@ -286,7 +291,7 @@ Feature: [Behavior area]
 - [ ] RED scenarios assert the forbidden effect did **not** occur.
 - [ ] Fewer than ~10 steps; tables fit one screen.
 - [ ] Blank line between scenarios; none within a scenario's steps.
-- [ ] Header comment ties the file to its GREEN goal.
+- [ ] Header comment ties the file to its GREEN goal; `@eval` lines present for any BLUE cards.
 
 ---
 

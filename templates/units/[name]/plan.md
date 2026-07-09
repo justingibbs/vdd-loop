@@ -1,15 +1,14 @@
 <!--
   plan.md — TEMPLATE (agent-generated in practice).
 
-  The feature's architecture: how the code will satisfy the .feature scenarios and
-  rubric criteria. Describes the shape of the solution, not a restatement of the
-  requirements. Include only what's useful — a small feature may not need a separate
-  plan at all.
+  The unit's architecture: how the code will satisfy the .feature scenarios and
+  @eval criteria. Describes the shape of the solution, not a restatement of the
+  requirements. Include only what's useful — a small unit may not need a plan at all.
 
   Delete these comments once filled in.
 -->
 
-# plan.md — [feature-name]
+# plan.md — [unit-name]
 
 ## Approach in a paragraph
 
@@ -32,7 +31,7 @@ change that would require a schema-change-proposal.md and a pause.]
 | Scenario / criterion | Mechanism |
 |----------------------|-----------|
 | [.feature scenario] | [how the design makes it pass] |
-| [rubric E?] | [how the design earns the score] |
+| [@eval E?] | [how the design earns the score] |
 
 ## Risks / things to watch
 

@@ -1,18 +1,28 @@
 # dispute-summary.feature
 #
-# The Validation layer for the dispute-summary feature.
-# Output of Goal Storming's YELLOW (validation) and RED (negative
-# validation) cards.
+# Verification standard for the dispute-summary unit.
+# Validation scenarios come from Goal Storming's YELLOW (positive) and RED
+# (negative) cards. Evaluation criteria are inline as @eval lines below.
 #
 # Goal (GREEN): A dispute reviewer can grasp what a dispute is about,
 #               and decide how to route it, without opening the full case file.
 #
-# This feature ALSO has an Evaluation layer, because summary *quality*
-# (faithfulness, neutrality, completeness) cannot be captured by a
-# deterministic assertion. Those judgment-based criteria live in
-# /evaluations/dispute-summary.rubric.md. This file covers only what a
-# deterministic check can confirm — the guardrails around the summary,
-# not its quality.
+# --- Evaluation criteria (@eval lines) ---
+# Summary *quality* (faithfulness, neutrality, completeness) requires judgment
+# and cannot be captured by a deterministic assertion. These @eval lines are the
+# Evaluation layer for this unit; anchor descriptions are in dispute-summary.rubric.md.
+#
+# @eval | E1 | Faithfulness      | 0-5       | ≥4   | Summary uses only facts present in the source case file
+# @eval | E2 | Neutrality        | PASS/FAIL | PASS | Summary attributes claims without assigning blame or verdict
+# @eval | E3 | Routing facts     | 0-5       | ≥4   | Summary contains what, amount, date, and customer reason
+# @eval | E4 | Conciseness       | 0-5       | ≥3   | No filler or restatement beyond what aids routing
+# @eval-detail | dispute-summary.rubric.md
+#
+# Note on the boundary between layers:
+#   "150 words or fewer"   → deterministic → YELLOW scenario below
+#   "concise, no filler"   → judgment      → @eval E4 above
+# The length cap is a floor of objectivity under the softer quality bar;
+# both exist, and they check different things.
 
 Feature: Dispute summary
   As a dispute reviewer

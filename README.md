@@ -27,7 +27,7 @@ A spec can be satisfied by the wrong implementation. A tight verification standa
 The practice splits verification into two techniques:
 
 - **Validation** — deterministic, binary, machine-checkable. Lives in `.feature` files (Gherkin).
-- **Evaluation** — scored, judgment-based, checked by rubric or LLM-as-judge. Lives in `.rubric.md` files.
+- **Evaluation** — scored, judgment-based, checked by LLM-as-judge or human reviewer. Lives as `# @eval` lines directly in the `.feature` file; an optional `.rubric.md` provides anchor descriptions for rich criteria.
 
 The human-owned front of the loop is a session called **Goal Storming** — start from goals ("what does success actually mean here?") and derive the verifications, constraints, and framing from them. See [`docs/01-goal-storming.md`](docs/01-goal-storming.md), which is the most developed piece of the methodology so far.
 
@@ -51,16 +51,21 @@ So: **this needs to be truly used to find its flaws.** The file conventions, the
 PROJECT_BRIEF.md              The original handoff / design brief. Snapshot of thinking.
 docs/01-goal-storming.md      The core practice, fully written. Start here after the brief.
 gherkin-guidelines.md         Writing the Validation layer (.feature). Forked from AutomationPanda (MIT).
-evaluation-guidelines.md      Writing the Evaluation layer (.rubric.md). Written from scratch.
-templates/                    Copy-into-your-project scaffolds: SPEC, CLAUDE/AGENTS, feature,
-                              rubric, the Goal Storming worksheet, and the specs/ skeletons.
-examples/password-reset/      Worked example — pure Validation (no rubric).
-examples/dispute-summary/     Worked example — Validation + Evaluation (with a rubric).
+evaluation-guidelines.md      Writing the Evaluation layer (@eval lines + optional .rubric.md).
+templates/                    Copy-into-your-project scaffolds: SPEC, CLAUDE/AGENTS, Goal Storming
+                              worksheet, and templates/units/[name]/ — the full unit folder skeleton.
+examples/password-reset/      Worked example — pure Validation (no @eval lines).
+examples/dispute-summary/     Worked example — Validation + Evaluation (@eval lines + .rubric.md detail).
+skills/                       The executable side. skills/README.md is the family
+                              index (roster + shared SKILL.md format). First slice
+                              built: feature-implement + verification-report.
 LICENSING.md                  How the dual license splits across the repo.
 LICENSE / LICENSE-docs        Apache-2.0 (code) / CC BY 4.0 (docs).
 ```
 
-**Planned but not yet built** (see the repo structure in [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md)): `METHODOLOGY.md`, the rest of `/docs` (`02`–`08`), and the agent `/skills` (bootstrap, feature-implement, verification-report, spec/gherkin/rubric review).
+All verification artifacts and working docs live in a single `units/[name]/` folder per unit of work — one place to open, everything there. See the examples for the full shape.
+
+**Planned but not yet built** (see the repo structure in [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md)): `METHODOLOGY.md`, the rest of `/docs` (`02`–`08`), and the remaining `/skills` (`vdd-bootstrap`, `spec-guardian`, `gherkin-review`, `rubric-review`, `goal-storming-facilitator`). See [`skills/README.md`](skills/README.md) for the full roster and what's built.
 
 ## Getting oriented
 

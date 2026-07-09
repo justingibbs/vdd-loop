@@ -1,0 +1,44 @@
+<!--
+  goals.md — TEMPLATE. Create as units/<name>/goals.md.
+
+  The unit's goals and how you expect to verify them. Written early — before or
+  alongside the .feature file. Loose enough for initial thinking; the .feature
+  and its @eval lines are where verification hardens into something executable.
+
+  Delete these comments once filled in.
+-->
+
+# goals.md — [unit-name]
+
+## Goals
+
+*Outcomes, not tasks. If it presumes the solution ("add an endpoint"), it's below
+the goal line.*
+
+- 🟩 G1: [goal — what does success mean here?]
+- 🟩 G2: [goal]
+
+## Verification intent
+
+*How you expect to prove each goal. Prose is fine at this stage — the .feature and
+@eval lines are where this hardens. A gap is allowed; the failure is not trying,
+not the gap itself.*
+
+- G1: [deterministic → will become YELLOW/RED scenarios in `[name].feature` |
+       judgment required → will become `@eval` lines in `[name].feature` |
+       still figuring this out → known gap to revisit]
+- G2: [...]
+
+## Design Concept *(optional — 🟪)*
+
+*The unit in one breath. Succinct and enticing. If it won't come, the goals may
+not be settled yet — consider going back to the goals.*
+
+> [one-breath framing]
+
+## Constraints *(⬛)*
+
+*SPEC.md constraints that specifically shape this unit. Do not copy the full
+SPEC.md here — call out the ones that matter for this unit's design.*
+
+- [constraint]

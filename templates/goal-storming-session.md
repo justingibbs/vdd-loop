@@ -52,7 +52,7 @@ revisit**, don't let it stall the session. The failure is not trying, not the ga
 |---|------|------------|
 | V1 | G? | [deterministic, checkable outcome] |
 
-### 🟦 Evaluations (judgment → `.rubric.md`, only if needed)
+### 🟦 Evaluations (judgment → `@eval` lines in `.feature`, only if needed)
 
 | # | Goal | Evaluation | Scale / threshold |
 |---|------|------------|-------------------|
@@ -115,8 +115,8 @@ a breath, [Design Concept]."* If the story doesn't hang together, you're not don
 
 | Cards | Destination |
 |-------|-------------|
-| 🟨 Validations + 🟥 Negatives | `/features/<name>.feature` |
-| 🟦 Evaluations | `/evaluations/<name>.rubric.md` |
+| 🟨 Validations + 🟥 Negatives | `units/<name>/<name>.feature` |
+| 🟦 Evaluations | `# @eval` lines in `units/<name>/<name>.feature` (+ `<name>.rubric.md` if criteria need anchor descriptions) |
 | ⬛ Constraints | `SPEC.md` |
-| 🟩 Goals | short goals list atop the target artifact (requirements.md for a feature; SPEC.md / README.md for a project) |
-| 🟪 Design Concept | project → SPEC.md / README.md · feature → that feature's requirements.md |
+| 🟩 Goals | `units/<name>/goals.md` (also at top of `SPEC.md` / `README.md` at project scale) |
+| 🟪 Design Concept | top of `units/<name>/requirements.md` · or `SPEC.md` / `README.md` at project scale |

@@ -24,12 +24,9 @@ AGENT LOOP            (agent derives requirements → plan → tasks →
                        until the verification standards pass)
 ```
 
-Goal Storming runs at **two scopes**, using the same practice either way:
+Goal Storming runs at any scale — a whole project, a large chunk of work, a single feature. The same cards and sequence apply regardless.
 
-- **Project scope** — standing up a new project. Establishes the project's goals, its overarching verification posture, its guiding concept, and its constraints.
-- **Feature scope** — scoping one unit of work inside an existing project. Establishes that feature's goals and the verifications that prove it, inheriting the project's constraints.
-
-The altitude changes; the cards and the sequence do not.
+**The artifact in all cases is a `units/[name]/` folder** — one folder per unit of work, named after the work (like a branch name: `initial-build`, `password-reset`). The folder holds `goals.md`, one or more `.feature` files, and all working docs. What changes across scale is the *rigor of verification*: at project scale, verification intent can be prose; at feature scale, it must be executable Gherkin and `@eval` lines a runner can actually check. The verifications harden as you descend — but the practice is the same at every level.
 
 ---
 
@@ -73,7 +70,7 @@ Cards are the unit of the session. Each color answers a different question about
 |--------|------------------------|-----------------------------------------------|------------------------|-----------------------------|
 | 🟩 GREEN | **Goals** | "What does success mean here?" | **Yes** — the spine | Referenced across all artifacts |
 | 🟨 YELLOW | **Validations** | "What deterministic check proves this goal?" | **Yes** — ≥1 per goal | `.feature` |
-| 🟦 BLUE | **Evaluations** | "What about this goal needs judgment to assess?"| When judgment is involved | `.rubric.md` |
+| 🟦 BLUE | **Evaluations** | "What about this goal needs judgment to assess?"| When judgment is involved | `@eval` lines in `.feature` (+ optional `.rubric.md` detail) |
 | 🟥 RED | **Negative validations** | "What must never happen?" | As needed | `.feature` |
 | ⬛ BLACK | **Constraints** | "What must any solution respect, regardless?" | As needed | `SPEC.md` |
 | 🟪 PURPLE | **Design Concepts** | "Can we say, in a breath, what this *is*?" | **Optional — but clarifying** | `SPEC.md` / `README.md` / `requirements.md` |
@@ -97,7 +94,7 @@ If you can write an assertion for it, it's a validation.
 
 ### 🟦 BLUE — Evaluations
 
-Outcomes that require judgment — no single correct answer. Summarization quality, tone, relevance, classification quality. These become criteria in a `.rubric.md` file, scored on a defined scale with a pass threshold.
+Outcomes that require judgment — no single correct answer. Summarization quality, tone, relevance, classification quality. These become `@eval` lines in the `.feature` file — one line per criterion, inline with the Validation scenarios. When a criterion needs anchor descriptions or a multi-case evaluation set beyond what fits in a line, an optional `.rubric.md` detail file is linked via `@eval-detail`.
 
 - *"The dispute summary captures the customer's core complaint without editorializing."* — scored, not asserted.
 
@@ -187,25 +184,25 @@ The session is done when:
 The board splits into artifacts. This mapping is what makes the output machine-consumable by the agent loop.
 
 ```
-🟩 GREEN  Goals               → the spine. Captured as a short goals list at
-                                 the top of the target artifact (requirements.md
-                                 for a feature, SPEC.md/README.md for a project),
-                                 and referenced by the verification cards.
+🟩 GREEN  Goals               → units/[name]/goals.md
+                                 (At project scale, goals also appear at the top
+                                 of SPEC.md / README.md.)
 
 🟨 YELLOW ┐
-          ├ Validations        → /features/[name].feature      (Validation layer)
+          ├ Validations        → units/[name]/[name].feature     (Validation layer)
 🟥 RED    ┘ + Negative
 
-🟦 BLUE   Evaluations          → /evaluations/[name].rubric.md  (Evaluation layer)
+🟦 BLUE   Evaluations          → # @eval lines in [name].feature (Evaluation layer)
+                                  + optional units/[name]/[name].rubric.md
+                                    (when criteria need anchor descriptions)
 
 ⬛ BLACK  Constraints          → SPEC.md                         (Constraint layer)
 
-🟪 PURPLE Design Concepts      → scope-dependent communication device:
-                                   • project session → SPEC.md and/or README.md
-                                   • feature session → that feature's requirements.md
+🟪 PURPLE Design Concepts      → units/[name]/requirements.md (top)
+                                  (or SPEC.md / README.md at project scale)
 ```
 
-The Design Concept's endpoint follows the session's scope because it is fundamentally a **communication device** — it belongs wherever a reader meets the project or feature first. A project's concept is the hook at the top of the README; a feature's concept is the framing line atop its requirements.
+Everything below the constraint layer — `requirements.md`, `plan.md`, `tasks.md`, the implementation, and `verification-report.md` — is generated by the agent, not by the session. All of it lives in the same `units/[name]/` folder as the verification standard.
 
 Everything below the constraint layer — `requirements.md`, `plan.md`, `tasks.md`, the implementation, and `verification-report.md` — is generated by the agent, not by the session.
 
@@ -232,7 +229,7 @@ Everything below the constraint layer — `requirements.md`, `plan.md`, `tasks.m
 > - ⬛ **Constraint:** tokens expire within 15 minutes; use the existing Postgres user store.
 > - 🟪 **Design Concept:** *"a self-service back door that's safe because it's time-boxed and single-use."*
 >
-> Output: the YELLOW + RED cards become `password-reset.feature`; the constraint reinforces `SPEC.md`; the concept opens `specs/password-reset/requirements.md`. No BLUE card — nothing here needs judgment.
+> Output: the YELLOW + RED cards become `units/password-reset/password-reset.feature`; the constraint reinforces `SPEC.md`; the concept opens `units/password-reset/requirements.md`. No BLUE card — nothing here needs judgment, so no `@eval` lines.
 
 The fuller worked version of this lives in `/examples/password-reset/`.
 

@@ -1,13 +1,12 @@
 # verification-report.md — dispute-summary
 
 *Written by the verifier at the end of each loop run. Unlike a pure-Validation
-feature, this report has **two populated layers**: deterministic `.feature`
-scenarios and scored `.rubric.md` criteria. Both must pass for the feature to be
-done.*
+unit, this report has **two populated layers**: deterministic `.feature` scenarios
+and `@eval` criteria scored by judgment. Both must pass for the unit to be done.*
 
-**Feature:** dispute-summary
-**Verification standard:** `dispute-summary.feature` (4 scenarios) +
-`dispute-summary.rubric.md` (4 criteria)
+**Unit:** dispute-summary
+**Verification standard:** `dispute-summary.feature` (4 scenarios + 4 `@eval` criteria)
+**Evaluation detail:** `dispute-summary.rubric.md` (anchor descriptions + judge protocol)
 **Evaluation set:** 12 representative disputes
 **Result:** ✅ PASS — Validation 4/4, Evaluation 4/4 on loop iteration 2
 
@@ -25,9 +24,10 @@ done.*
 Deterministic layer was green from iteration 1. The loop's work was entirely in
 the Evaluation layer.
 
-## Evaluation layer — `.rubric.md` criteria
+## Evaluation layer — `@eval` criteria
 
-Scored over the 12-dispute evaluation set. Thresholds from the rubric.
+Scored over the 12-dispute evaluation set. Thresholds from the `@eval` lines in
+`dispute-summary.feature`; anchor descriptions from `dispute-summary.rubric.md`.
 
 | Criterion | Scale | Threshold | Iter 1 | Iter 2 |
 |-----------|-------|-----------|:------:|:------:|
@@ -47,7 +47,7 @@ Scored over the 12-dispute evaluation set. Thresholds from the rubric.
   is meant to reach.
 - **Why it failed:** neutrality is a **gate, not an average.** Even though 10/12
   summaries were neutral, two blame-assigning summaries fail the whole criterion by
-  design (see rubric E2 rationale).
+  design (see `dispute-summary.rubric.md` E2 rationale).
 - **What was needed:** constrain the generation to attribute claims
   ("the customer states…", "the record shows…") and never assert fault. This is a
   prompt/instruction fix, not a code fix.
@@ -69,7 +69,7 @@ Scored over the 12-dispute evaluation set. Thresholds from the rubric.
 - E1 and E4 held steady (the neutrality/completeness fixes didn't cost
   faithfulness or density).
 
-All 4 scenarios and all 4 criteria meet their thresholds.
+All 4 scenarios and all 4 `@eval` criteria meet their thresholds.
 
 ## What this example demonstrates
 
@@ -80,7 +80,7 @@ All 4 scenarios and all 4 criteria meet their thresholds.
   report has to surface both failure shapes.
 - **Deterministic and judgment checks are complementary.** The `.feature` length
   cap passed the whole time; conciseness (E4) is a different, softer question that
-  the rubric — not the feature file — is responsible for.
+  the `@eval` criterion — not the scenario — is responsible for.
 
 ## Stop condition
 

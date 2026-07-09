@@ -1,12 +1,11 @@
 # verification-report.md — password-reset
 
 *Written by the verifier at the end of each loop run. Reports pass/fail per
-`.feature` scenario (and per `.rubric.md` criterion, when one exists). This
-feature is pure Validation — there is no rubric, so the Evaluation section is
-empty by design.*
+`.feature` scenario. This unit is pure Validation — there are no `@eval` lines,
+so the Evaluation section is empty by design.*
 
-**Feature:** password-reset
-**Verification standard:** `password-reset.feature` (7 scenarios), no rubric
+**Unit:** password-reset
+**Verification standard:** `password-reset.feature` (7 scenarios), no `@eval` criteria
 **Result:** ✅ PASS — 7/7 scenarios passing on loop iteration 2
 
 ---
@@ -23,9 +22,9 @@ empty by design.*
 | A new password that violates the policy is rejected | ✅ | ✅ |
 | Requesting a reset for an unregistered address reveals nothing | ❌ | ✅ |
 
-## Evaluation layer — `.rubric.md` criteria
+## Evaluation layer — `@eval` criteria
 
-*None. This feature has no BLUE (evaluation) cards and therefore no rubric.
+*None. This unit has no BLUE (evaluation) cards and therefore no `@eval` lines.
 Nothing here requires judgment to assess.*
 
 ---

@@ -1,19 +1,23 @@
-# feature-name.feature — TEMPLATE
+# [name].feature
 #
-# Copy to /features/<feature-name>.feature and fill in. This is the Validation
-# layer: deterministic scenarios that either pass or fail. Scenarios come from
-# Goal Storming's YELLOW (positive) and RED (negative) cards.
+# Create as units/<name>/<name>.feature and fill in. This is the complete
+# verification standard for the unit: Validation scenarios (YELLOW + RED) and
+# Evaluation criteria (@eval lines, BLUE). Write against gherkin-guidelines.md
+# for the scenarios and evaluation-guidelines.md for the @eval lines.
 #
-# Write it against gherkin-guidelines.md. Keep this header (it ties the file to
-# its goal); delete the instructional lines below once filled in.
+# Goal (GREEN): [the one-line goal this unit proves]
 #
-# Goal (GREEN): [the one-line goal this feature proves]
-# Rubric:       [none | evaluations/<feature-name>.rubric.md]
+# --- Evaluation criteria (@eval lines) ---
+# Include only for goals that need judgment to assess (BLUE cards).
+# Remove this block entirely if the unit is purely deterministic.
+#
+# @eval | E1 | [Name] | [0-5 | PASS/FAIL] | [≥N | PASS] | [one sentence: what is judged]
+# @eval-detail | [name].rubric.md  ← add only when criteria need anchor descriptions
 #
 # Reminders (see gherkin-guidelines.md): one behavior per scenario · declarative,
 # not imperative · state-based Givens · third person, present tense · strict
-# Given→When→Then · observable Then outcomes · realistic data · RED scenarios must
-# assert the forbidden effect did NOT occur, not just that an error appeared.
+# Given→When→Then · observable Then outcomes · realistic data · RED scenarios
+# must assert the forbidden effect did NOT occur, not just that an error appeared.
 
 Feature: [Behavior area]
   As a [role]
