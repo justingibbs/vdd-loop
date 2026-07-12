@@ -1,6 +1,6 @@
 # HANDOFF.md — Continuation Brief
 
-*For the next agent (LLM or human) picking up `vdd-loop`. This is the "where we are, what's next" snapshot. Written 2026-07-02. Unlike `PROJECT_BRIEF.md` (the original design snapshot), this file tracks **current state and live decisions** — when the two disagree, this file and the docs it points to are newer.*
+*For the next agent (LLM or human) picking up `vdd-loop`. This is the "where we are, what's next" snapshot. Written 2026-07-02; **updated 2026-07-12** (first dogfood run + the scope simplification, §3.9–§3.12). Unlike `PROJECT_BRIEF.md` (the original design snapshot), this file tracks **current state and live decisions** — when the two disagree, this file and the docs it points to are newer.*
 
 ---
 
@@ -31,7 +31,11 @@ All committed and pushed to `origin/main` (`git@github.com:justingibbs/vdd-loop.
 | **Guidelines pair** | `gherkin-guidelines.md` (Validation), `evaluation-guidelines.md` (Evaluation) | ✅ Complete. Sibling guides — one per technique. |
 | **Worked example (Validation only)** | `examples/password-reset/` | ✅ `.feature` + requirements/plan/tasks/verification-report. No rubric (by design). |
 | **Worked example (Validation + Evaluation)** | `examples/dispute-summary/` | ✅ `.feature` + `.rubric.md` + requirements/verification-report. |
-| **Templates** | `templates/` (SPEC, CLAUDE, AGENTS, feature, rubric, goal-storming-session, + `specs/[feature-name]/` skeletons) | ✅ Complete copy-in scaffolds. |
+| **Templates** | `templates/` (SPEC, CLAUDE, AGENTS, goal-storming-session, + `units/[name]/` skeletons: `.goals`, `.feature`, `.rubric.md`) | ✅ Copy-in scaffolds (working-doc templates removed per §3.9). |
+| **Contract** | `llm.txt` | ✅ The consuming-agent contract (added 2026-07-12). |
+| **Skill family** | `skills/` — bootstrap, facilitator, gherkin-review, rubric-review, derivability-review | ✅ All five built 2026-07-12; only `gherkin-review` dogfooded. |
+| **Compare doc** | `docs/08-compare.md` | ✅ Written 2026-07-12; honest new-vs-inherited accounting. |
+| **First dogfood** | `units/gherkin-review/` | ✅ Run 1 PASS (9/9 validation, mechanical); field notes FN-1–FN-11. |
 | **Licensing** | `LICENSE` (Apache-2.0), `LICENSE-docs` (CC BY 4.0), `LICENSING.md` | ✅ Dual-license scheme. |
 | **Front door** | `README.md` | ✅ Status sections current as of this handoff. |
 | **Original brief** | `PROJECT_BRIEF.md` | ✅ Kept as a historical snapshot; partially annotated `[SUPERSEDED]`. |
@@ -49,20 +53,31 @@ All committed and pushed to `origin/main` (`git@github.com:justingibbs/vdd-loop.
 7. **`CLAUDE.md` is canonical; `AGENTS.md` is a thin pointer** to it (avoids drift). The `AGENTS.md` template documents how to invert this if a toolchain reads only `AGENTS.md`.
 8. **`gherkin-guidelines.md` is a fork of AutomationPanda's `gherkin-guidelines-for-ai`** (MIT, © 2026 Pandy Knight). The MIT license + copyright notice are preserved in-file and **must stay** — `LICENSING.md` commits to it. Adaptations (verification-first framing, YELLOW/RED mapping, Evaluation-boundary section, traceability header) are under the same MIT.
 
+*Added 2026-07-12, after the first dogfood run (`units/gherkin-review/` — read its `field-notes.md`):*
+
+9. **VDD is authoring-side only.** The biggest scope decision since the brief. VDD is a *standard* — files (`.goals`, `.feature`, ancillary verification docs, `spec.md`), a loose folder structure, and skills that **write, grade, and push on** verifications. The build loop, runner, working docs, and report format belong to the consuming coding agent (usually a clean session). The retired `feature-implement` and `verification-report` skills' invariants survive as **`llm.txt`** — the contract handed to any consuming agent. Do not rebuild loop-execution skills inside VDD.
+10. **`.goals` is a first-class extension.** `goals.md` → `units/<name>/<name>.goals`, parallel to `<name>.feature`. The Design Concept lives in its section of the `.goals` file (no more `requirements.md` destination — that file is now the coding agent's business, if it even makes one).
+11. **The layer is defined by the check, not the checked** (owner's ruling, first dogfood). A mechanical assertion over LLM-produced output is Validation; subject variance is a protocol concern. Now stated in `gherkin-guidelines.md`'s layer-boundary section.
+12. **`derivability-review` joined the roster** — the "does this standard carry enough context (and low enough variance) for a cold session to build the right thing?" check. Arguably VDD's most distinctive skill; not yet built.
+13. **Ancillary verification files: contract, not formats.** Any shape is allowed, but every ancillary file must answer four questions (what it verifies / on what inputs / by what method and executor / what counts as pass), and the `.feature` must declare each one via a `# @verify-detail | <path> | <what it provides>` header line (generalizing `@eval-detail`). Specific formats are *earned* — documented only after recurring in real units (`.rubric.md` is the only earned shape so far; evaluation sets are the likely next). Canonical in `evaluation-guidelines.md` § Ancillary verification files.
+
 ---
 
 ## 4. What's next — not yet built (prioritized)
 
-The README's "planned but not yet built": `METHODOLOGY.md`, `/docs/02`–`08`, and `/skills/*`.
+*(Rewritten again later on 2026-07-12: all five skills and `docs/08-compare.md`
+are now built. What remains is validation, not construction.)*
 
-**Recommended order and rationale:**
-
-1. **`/skills/feature-implement/SKILL.md` — highest value.** This is the core loop skill (reads `.feature` + `.rubric.md` + `SPEC.md`, generates working docs, implements, validates, evaluates, writes the report). It's what turns the repo from *documentation* into something *executable*. Everything needed to write it now exists (both guidelines, both examples, templates). Note: VDD uses its **own SKILL.md format**, not bound to Addy Osmani's spec (brief design decision #6) — so part of this task is deciding that format.
-2. **`/skills/vdd-bootstrap/SKILL.md`** — scaffolds a new VDD project from the templates. High leverage, low novelty (mostly copies `templates/`).
-3. **The review skills** — `gherkin-review`, `rubric-review` (validate `.feature`/`.rubric.md` against the two guidelines), `spec-guardian` (enforces the SPEC.md protection rule), `verification-report` (the verifier).
-4. **`/docs/02`–`08`** — the rest of the doc set (event-storming-first, validation-vs-evaluation, feature-files, rubric-files, spec-md, agent-loop, compare). Lower urgency; `01` already carries the core.
-5. **`METHODOLOGY.md`** — the full practice document (the brief, expanded/cleaned). Best written *last*, once the pieces have settled.
-6. **`/skills/goal-storming-facilitator/SKILL.md`** — depends on resolving open question §5.2 (does it transcribe a live session, or run one solo via structured Q&A?).
+1. **The end-to-end pilot — the most valuable thing left.** The flagship claim
+   (a clean session reads `.feature` + `.goals` + `spec.md` + `llm.txt` and
+   builds working software) has never been tested. Bootstrap a small real
+   project, goal-storm it, review, hand off to a genuinely fresh session, watch
+   it build and run the verifications. Expect a fresh crop of field notes.
+2. **Run `derivability-review` for real, split-session** (one session authors,
+   a fresh one probes — FN-8's protocol). Can be folded into the pilot.
+3. **Independent re-score of the dogfood's Evaluation layer.** `units/gherkin-review/verification-report.md` is self-scored (FN-5); a fresh session (or the owner) should re-judge E1–E3 from `runs/*.findings.md` cold.
+4. **Formally close the stale open questions** (§5.1, §5.4, §5.5) — likely one small edit each, not builds.
+5. **`METHODOLOGY.md` and `/docs/02`–`07`** — still best written last, after the pilot has generated real evidence.
 
 ---
 
@@ -71,9 +86,9 @@ The README's "planned but not yet built": `METHODOLOGY.md`, `/docs/02`–`08`, a
 Carried from the brief, with status updated:
 
 1. Does Goal Storming fully replace the separate "Verification Storming" concept? — *Still open; the brief treats it as replaced, no one has pushed back.*
-2. What does `goal-storming-facilitator` actually do — transcribe a live human session, or run one solo with a single stakeholder via structured Q&A? — *Still open. Partially informed by the LLM-as-participant decision (§3.1), but the solo-run mode isn't settled.*
+2. What does `goal-storming-facilitator` actually do — transcribe a live human session, or run one solo with a single stakeholder via structured Q&A? — ✅ **Resolved 2026-07-12: both.** The skill is dual-mode, chosen at step 0 (live group facilitation, or solo structured Q&A). The solo mode has live evidence — the two Goal Storming sessions that produced the `gherkin-review` unit and the ancillary-files decision were effectively solo runs. *Owner may veto; decided while building rather than asked.*
 3. Should `.rubric.md` support multiple criteria with different scales in one file? — ✅ **Resolved: yes** (§3.6).
-4. What's the mechanism for "ask an LLM to summarize this project and build a diagram" — a dedicated skill or a generic capability? — *Still open. Note: brief design decision #8 makes this a deliberate test of whether the artifacts are self-describing.*
+4. What's the mechanism for "ask an LLM to summarize this project and build a diagram" — a dedicated skill or a generic capability? — *Probably subsumed (2026-07-12): `llm.txt` + the standard files are the onboarding, and `derivability-review`'s "cold reading" section is literally an LLM summarizing the project from its artifacts. Recommend closing as "generic capability, tested by derivability-review" — owner to confirm.*
 5. Final repo name — `vdd-loop` is the working name. — *Effectively settled in practice (README, remote, all docs use it), but never formally closed.*
 
 New, surfaced this session:
@@ -93,7 +108,7 @@ New, surfaced this session:
 
 - **Consult before building on conceptual/design decisions.** The owner prefers to shape naming, card types, and framing *in dialogue* before code is written. Several good pivots this session came from that (Design Concept as a card; toolkit-not-mandate; push-don't-block). Ask; don't assume.
 - **Commit/push cadence:** commit when the owner asks; push when the owner asks. Don't push unprompted.
-- **Commit message convention:** end with `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
+- **Commit message convention:** end with a `Co-Authored-By:` line naming the model that did the work (e.g. `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`).
 - **Untracked files may appear** that the owner added out-of-band (this session: the `LICENSE*` files, `README.md`, brief edits). Review before committing; don't sweep unknown files into an unrelated commit.
 
 ---
@@ -106,4 +121,4 @@ New, surfaced this session:
 
 ---
 
-*The single most valuable next step is `/skills/feature-implement/` — it's what makes VDD runnable instead of just readable. But per README's own caveat: the highest-value thing overall is to run a real feature through this and find where it breaks.*
+*The first dogfood run happened (2026-07-12, `units/gherkin-review/`) and did exactly what the README promised: it found where the methodology bent, and the scope was cut back accordingly. The highest-value thing remains the same — keep running real work through it, preferably with the standard's author and the builder in separate sessions, and keep the field notes honest.*

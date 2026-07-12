@@ -1,85 +1,151 @@
 # vdd-loop
 
-**Verification-Driven Development — a methodology and toolkit for building software with AI coding agents, where the human's primary job is defining what would prove the work correct, and the agent owns the rest inside a loop that runs until that standard is met.**
+**Verification-Driven Development — a standard for building software with AI
+coding agents by centering the work on verifications instead of specs. Humans
+(with an LLM facilitator) define what would prove the work correct; a coding
+agent in a clean session builds from that standard and loops until it passes.**
 
-> TDD proved the code. BDD proved the behavior. VDD proves the loop.
+> TDD proved the code. BDD proved the behavior. VDD tells the agent when it's done.
 
 ---
 
-> ⚠️ **Status: early and experimental.** This is a working sketch of a methodology, not a finished product. Much of what's here is still a document and an intention rather than running tooling. Names, cards, and file conventions are actively changing. Treat everything as a working draft, not a standard.
+> ⚠️ **Status: early and experimental.** This is a working sketch, not a finished
+> product. It has been dogfooded exactly once (see `units/gherkin-review/`), and
+> that run reshaped it. Treat everything as a working draft, not a standard-standard.
 
 ## The idea in a breath
 
-Most agentic-coding guidance treats the **specification** as the primary artifact and verification as something you bolt on afterward. VDD inverts that:
+Most agentic-coding guidance treats the **specification** as the primary artifact
+and verification as something you bolt on afterward. VDD inverts that:
 
 ```
 What would prove this works?      ← Start here. The irreplaceable human judgment.
         ↓
-What behavior does that imply?
+Capture it as verifications, with enough context to build from.
         ↓
-What architecture satisfies it?
+Hand it to a coding agent in a clean session.
         ↓
-Agent builds it and loops until the verification standard passes.
+The agent builds — and the verifications tell it when it's done,
+looping until the standard passes.
 ```
 
-A spec can be satisfied by the wrong implementation. A tight verification standard can't. An agent can derive a spec, a plan, and code from a precise-enough statement of *what would prove this correct* — but it can't invent that standard, because the standard is where the human says what actually matters.
+A spec can be satisfied by the wrong implementation. A tight verification
+standard is much harder to satisfy wrongly. The agent can derive everything else
+from a precise-enough statement of *what would prove this correct* — but it can't
+invent that standard, because the standard is where the human says what matters.
 
-The practice splits verification into two techniques:
+## What VDD is — and deliberately is not
 
-- **Validation** — deterministic, binary, machine-checkable. Lives in `.feature` files (Gherkin).
-- **Evaluation** — scored, judgment-based, checked by LLM-as-judge or human reviewer. Lives as `# @eval` lines directly in the `.feature` file; an optional `.rubric.md` provides anchor descriptions for rich criteria.
+VDD is three things:
 
-The human-owned front of the loop is a session called **Goal Storming** — start from goals ("what does success actually mean here?") and derive the verifications, constraints, and framing from them. See [`docs/01-goal-storming.md`](docs/01-goal-storming.md), which is the most developed piece of the methodology so far.
+1. **Standard files.** `<name>.goals` (the outcome of Goal Storming),
+   `<name>.feature` (the verification standard: deterministic **Validation**
+   scenarios + judgment-based **Evaluation** criteria as inline `# @eval` lines),
+   ancillary verification files (e.g. `.rubric.md` detail), and `spec.md`
+   (constraints). The `.feature` is the source of truth and the done-signal.
+2. **A loose folder structure.** One folder per unit of work, named like a git
+   branch (`units/password-reset/`); a project build-out is a folder of feature
+   subfolders. Everything for a unit lives together.
+3. **Authoring skills.** Agent skills that help *write, grade, and push on*
+   verifications: goal storming, `.feature` review, rubric review, and checking
+   that a standard carries enough context for a cold session to build from.
+
+VDD is **not** a harness, a loop implementation, or a report format. The coding
+agent that consumes the standard owns its own working docs, its own loop, its
+own runner, and its own reporting. What VDD owes that agent is one thing:
+[`llm.txt`](llm.txt) — the contract that says what the files are and what makes
+a "done" verdict trustworthy (standard is read-only, validation only via
+executed checks, judges blind to thresholds, bounded loops, protected spec).
+
+## The user flow
+
+1. **Start a project** and import the skills from this repo (`vdd-bootstrap`
+   scaffolds the files).
+2. **Engage your agent about what you want to build.** It guides you into Goal
+   Storming — goals first, then "what would prove this?" Humans ratify goals;
+   the LLM proposes and challenges. Output: `.goals`, `.feature` file(s),
+   constraints into `spec.md`.
+3. **Grade the standard** with the review skills — including whether it carries
+   enough context for a session with no memory of your conversation.
+4. **Hand off.** A coding agent in a clean session reads `.feature` + `.goals` +
+   `spec.md` (+ `llm.txt`) and builds — running the validations for real,
+   getting the `@eval` criteria judged, looping until the standard passes or a
+   human is needed.
+
+## The two techniques
+
+- **Validation** — deterministic, binary, machine-checkable. Gherkin scenarios
+  in the `.feature`. Written against [`gherkin-guidelines.md`](gherkin-guidelines.md).
+- **Evaluation** — scored, judgment-based, checked by LLM-as-judge or human.
+  `# @eval` lines in the same `.feature`; optional `.rubric.md` for anchor
+  descriptions. Written against [`evaluation-guidelines.md`](evaluation-guidelines.md).
+
+The layer is defined by the nature of the *check*, not by what produced the
+behavior being checked. Most features need only Validation.
 
 ## Where it came from
 
-VDD was inspired by **Lee Boonstra's** whitepaper, *["Spec-Driven Production Grade Development in the Age of Vibe Coding"](https://www.kaggle.com/whitepaper-spec-driven-production-grade-development-in-the-age-of-vibe-coding)* ([leeboonstra.dev](https://www.leeboonstra.dev/)). That paper makes the case for treating the spec as a first-class, production-grade artifact when you build with AI agents.
-
-VDD is a response to that idea more than an implementation of it. The wager here is that the **verification standard**, not the spec, is the thing worth putting first — and that the spec, plan, and code are all better derived *from* verification than the other way around. If Boonstra's paper is "write the spec well," VDD's bet is "write down what would prove it, and let the spec fall out of that." Read the paper first; it's the clearer, more complete argument, and this repo is a riff on it.
+VDD was inspired by **Lee Boonstra's** whitepaper, *["Spec-Driven Production Grade
+Development in the Age of Vibe Coding"](https://www.kaggle.com/whitepaper-spec-driven-production-grade-development-in-the-age-of-vibe-coding)*
+([leeboonstra.dev](https://www.leeboonstra.dev/)). If that paper is "write the
+spec well," VDD's bet is "write down what would prove it, and let the spec fall
+out of that." Read the paper first — this repo is a riff on it.
 
 ## Provenance, and an honest caveat
 
-Much of this repo was assembled **with the aid of an LLM** — the brief, the docs, the structure. That has an obvious upside and a real cost, and it's worth stating plainly:
-
-The more I work with LLMs, the more impressed I am by them — and the more convinced I am that the **gestalt**, the actual crux of the message, still needs a human to clarify it. An LLM will happily produce a coherent, well-formatted, internally consistent methodology that is subtly *about the wrong thing*, or that reads as settled when it's really just fluent. The scaffolding here is fluent. Whether it's *right* is a separate question, and one that only gets answered by actually using it.
-
-So: **this needs to be truly used to find its flaws.** The file conventions, the card colors, the claim that verification-first beats spec-first — none of that has been earned yet through real projects. Consider this an invitation to break it, not a spec to adopt. If you try it and it falls apart somewhere, that failure is the most valuable thing this repo can produce right now.
+Much of this repo was assembled **with the aid of an LLM**. An LLM will happily
+produce a coherent, well-formatted methodology that is subtly about the wrong
+thing. The first dogfood run (building the `gherkin-review` skill through VDD's
+own process — see `units/gherkin-review/field-notes.md`) caught exactly that: the
+methodology had over-built the execution side, and the scope was cut back to
+what's here now. More runs will find more. **This needs to be used to find its
+flaws** — consider it an invitation to break it.
 
 ## What's actually here today
 
 ```
-PROJECT_BRIEF.md              The original handoff / design brief. Snapshot of thinking.
-docs/01-goal-storming.md      The core practice, fully written. Start here after the brief.
-gherkin-guidelines.md         Writing the Validation layer (.feature). Forked from AutomationPanda (MIT).
-evaluation-guidelines.md      Writing the Evaluation layer (@eval lines + optional .rubric.md).
-templates/                    Copy-into-your-project scaffolds: SPEC, CLAUDE/AGENTS, Goal Storming
-                              worksheet, and templates/units/[name]/ — the full unit folder skeleton.
-examples/password-reset/      Worked example — pure Validation (no @eval lines).
-examples/dispute-summary/     Worked example — Validation + Evaluation (@eval lines + .rubric.md detail).
-skills/                       The executable side. skills/README.md is the family
-                              index (roster + shared SKILL.md format). First slice
-                              built: feature-implement + verification-report.
-LICENSING.md                  How the dual license splits across the repo.
-LICENSE / LICENSE-docs        Apache-2.0 (code) / CC BY 4.0 (docs).
+llm.txt                       The contract for consuming coding agents. Start here
+                              to see what VDD asks of an agent.
+docs/01-goal-storming.md      The core practice, fully written.
+docs/08-compare.md            VDD vs TDD / BDD / SbE / SDD / vibe coding — including
+                              an honest account of what's new here vs inherited.
+gherkin-guidelines.md         Writing the Validation layer. Forked from AutomationPanda (MIT).
+evaluation-guidelines.md      Writing the Evaluation layer + ancillary verification
+                              files (the four-questions contract, @verify-detail).
+templates/                    Copy-into-your-project scaffolds: SPEC, CLAUDE/AGENTS,
+                              Goal Storming worksheet, units/[name]/ skeleton.
+examples/password-reset/      Worked example — pure Validation.
+examples/dispute-summary/     Worked example — Validation + Evaluation.
+skills/                       The authoring-side skill family, all five built:
+                              vdd-bootstrap, goal-storming-facilitator,
+                              gherkin-review, rubric-review, derivability-review.
+units/gherkin-review/         The first dogfood unit — VDD building its own skill,
+                              with field notes on everything that bent.
+PROJECT_BRIEF.md / HANDOFF.md Historical snapshot / continuation brief.
+LICENSING.md                  Dual license: Apache-2.0 (code) / CC BY 4.0 (docs).
 ```
 
-All verification artifacts and working docs live in a single `units/[name]/` folder per unit of work — one place to open, everything there. See the examples for the full shape.
-
-**Planned but not yet built** (see the repo structure in [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md)): `METHODOLOGY.md`, the rest of `/docs` (`02`–`08`), and the remaining `/skills` (`vdd-bootstrap`, `spec-guardian`, `gherkin-review`, `rubric-review`, `goal-storming-facilitator`). See [`skills/README.md`](skills/README.md) for the full roster and what's built.
+**Built but not yet field-proven:** only `gherkin-review` has been through the
+VDD loop itself; the other four skills are authored, consistent, and untested
+by a real session. **Still to come:** an end-to-end pilot (the whole flow on a
+real project — the flagship claim has never been tested), `docs/02`–`07`, and
+`METHODOLOGY.md` (deliberately last). See [`skills/README.md`](skills/README.md).
 
 ## Getting oriented
 
-1. Read Boonstra's paper for the spec-driven argument VDD is reacting to.
-2. Read [`PROJECT_BRIEF.md`](PROJECT_BRIEF.md) for the full intended shape and the open questions.
-3. Read [`docs/01-goal-storming.md`](docs/01-goal-storming.md) for the one practice that's actually worked out.
-4. Skim a worked example — [`examples/password-reset/`](examples/password-reset/) (pure Validation) or [`examples/dispute-summary/`](examples/dispute-summary/) (Validation + Evaluation) — to see the whole artifact chain end to end.
-5. Copy from [`templates/`](templates/), leaning on [`gherkin-guidelines.md`](gherkin-guidelines.md) and [`evaluation-guidelines.md`](evaluation-guidelines.md) as you write the verifications.
-6. Then — the point of the whole thing — try running a real feature through it and see where it breaks.
+1. Read [`llm.txt`](llm.txt) — the whole handoff in one page.
+2. Read [`docs/01-goal-storming.md`](docs/01-goal-storming.md) — the practice
+   that produces the standard.
+3. Skim a worked example, then copy from [`templates/`](templates/).
+4. Run a real feature through it and see where it breaks — that's the point.
 
 ## License
 
-`vdd-loop` is **dual-licensed**: code, templates, and skills under **Apache-2.0**; written methodology and docs under **CC BY 4.0**. The forked [`gherkin-guidelines.md`](gherkin-guidelines.md) stays under its upstream **MIT**. Full details and the file-by-file split are in [`LICENSING.md`](LICENSING.md).
+Dual-licensed: code, templates, and skills under **Apache-2.0**; methodology and
+docs under **CC BY 4.0**; the forked [`gherkin-guidelines.md`](gherkin-guidelines.md)
+stays **MIT**. Details in [`LICENSING.md`](LICENSING.md).
 
 ---
 
-*This README describes an early, still-forming methodology. If it reads as more certain than it should, that's exactly the flaw described above — push on it.*
+*This README describes a young, still-forming standard. If it reads more certain
+than it should, that's the flaw described above — push on it.*

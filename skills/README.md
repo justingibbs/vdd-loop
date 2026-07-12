@@ -1,195 +1,123 @@
 # skills/ — the VDD skill family
 
-*The executable side of VDD. Where `docs/` describes the practice and `templates/`
-gives you artifacts to fill in, the skills in this directory are the agent
-procedures that **run** the loop. This index names every skill, defines the shared
-SKILL.md format they all conform to, and — most importantly — shows how they hand
-off to each other. Read this before writing or changing any single skill: the
-family contract lives here, not in the individual files.*
+*The authoring side of VDD, as executable agent procedures. Where `docs/`
+describes the practice and `templates/` gives you artifacts to fill in, the
+skills here help humans **write, grade, and push on** verification standards.
+They end at the handoff: once the standard is good enough for a clean session
+to build from, VDD's skills are done — the coding agent that consumes the
+standard owns its own loop, runner, and reporting (its side of the deal is
+[`../llm.txt`](../llm.txt)).*
 
-> ⚠️ **Status: being built.** The roster below is the intended set; not all of it
-> exists yet. Each skill's row says whether it's built. This index was written
-> first, deliberately, so the skills are designed as a family rather than
-> discovered one at a time.
+> ⚠️ **Status: built, mostly unproven.** All five skills exist as of 2026-07-12,
+> but only `gherkin-review` has been through the VDD loop itself — see *Build
+> status* at the bottom. This index is the family contract — read it before
+> writing or changing any single skill.
+>
+> **Scope note (2026-07-12).** Two earlier skills — `feature-implement` and
+> `verification-report` — implemented the consuming loop inside VDD. The first
+> dogfood run showed that was scope overreach (see
+> `units/gherkin-review/field-notes.md`), and they were retired; their
+> invariants (never weaken the standard, executed-checks-only, blind judges,
+> bounded loops) survive as the contract in `llm.txt`.
 
 ---
 
 ## The core idea: skills hand off through artifacts
 
-A VDD skill is not a black box you call and forget. Each one has an explicit
-**artifact contract** — the files it reads and the files it writes. That contract
-*is* the interface between skills:
+Each skill has an explicit **artifact contract** — the files it reads and
+writes. That contract is the interface: no skill reaches into another's
+internals; if skill A needs what B produces, A reads B's output artifact. A
+well-formed artifact is enough for the next skill — or the eventual coding
+agent — to pick up cold.
 
-```
-goal-storming-facilitator  ──writes──▶  feature.feature
-                                            │
-                          gherkin-review ◀──┘  (reads it, reports findings)
-                                            │
-                        feature-implement ◀──┘  (reads the reviewed .feature,
-                                                  runs the loop against it)
-```
-
-No skill reaches into another's internals. If skill A needs what skill B produces,
-A reads B's output artifact. This is why the format below leads with **Inputs** and
-**Outputs**: they are the public API. It's also design-decision #8 (artifacts are
-self-describing) doing real work — a well-formed artifact is enough for the next
-skill to pick up cold.
-
-Some skills additionally **invoke** others as sub-steps (e.g. `feature-implement`
-calls `verification-report` every loop iteration). Those composition edges are
-listed per skill under **Composes with**.
-
----
-
-## Activation & hand-off (how the family is driven)
-
-Skills are **intent-triggered with offered hand-offs**, not a slash-command
-assembly line the user has to clock through by hand:
+## Activation & hand-off
 
 - **Activation is by intent.** "Let's define what this project is for" activates
-  `goal-storming-facilitator`; "build the password-reset feature" activates
-  `feature-implement`. Explicit invocation still works, but natural-language intent
-  is the primary trigger.
-- **A skill may call sub-skills inline.** The reviewers can run *while* the
-  facilitator drafts; `feature-implement` calls `verification-report` each
-  iteration. These internal calls need no user prompt — they're part of the skill.
-- **Between stations, the agent OFFERS the next step; the human confirms.** At a
-  station boundary the agent proposes ("the standard looks complete — run a
-  `gherkin-review` pass before we build?") and waits. It does **not** auto-advance.
-- **The goal boundary always needs a human yes.** This is the family's expression
-  of VDD's one hard line — *the LLM proposes, the human ratifies goals*. No skill
-  may carry momentum from goals into building without an explicit human hand-off.
-  Auto-chaining across that boundary is prohibited.
-
-Practically: each skill's `Procedure` ends by *stating what it produced and offering
-the next station*, never by silently invoking the next skill.
-
----
+  `goal-storming-facilitator`; "is this standard ready to build from?" activates
+  the reviewers. Explicit invocation also works.
+- **Between stations, the agent OFFERS the next step; the human confirms.** A
+  blanket instruction from the human ("take this all the way to a ready
+  standard") covers the stations it names.
+- **The goal boundary always needs a human yes.** The LLM proposes; the human
+  ratifies goals. No skill carries momentum from goals into a ratified standard
+  without an explicit human hand-off.
+- **The family ends at the handoff.** The last station's offer is: "this
+  standard is ready — start a clean session and build against it (see
+  `llm.txt`)." VDD skills never run the build loop themselves.
 
 ## The shared SKILL.md format
 
-*This section is the answer to open question #6 ("what is VDD's own SKILL.md
-format?"). VDD skills are valid, invocable skills — they carry standard
-frontmatter so any harness that loads skills can find them — but their **body**
-follows a fixed VDD structure so that every skill declares its artifact contract in
-the same place. The structure is not bound to any external skill spec; it is
-whatever makes the VDD loop legible.*
-
-Every `SKILL.md` in this directory has:
+Every `SKILL.md` in this directory has standard frontmatter (`name`,
+`description`) and this body:
 
 ```markdown
----
-name: <kebab-case-name>
-description: <one sentence — when to reach for this skill and what it does>
----
-
-## Purpose
-One line: what this skill is for.
-
-## Inputs        ← the contract. Files/values this skill reads.
-- `path/to/file` — what it is and why this skill needs it.
-
-## Outputs       ← the contract. Files this skill writes or modifies.
-- `path/to/file` — what this skill produces.
-
-## Invariants    ← hard rules this skill must never break.
-- e.g. "SPEC.md is never edited directly."
-
-## Procedure     ← the numbered steps the agent follows.
-1. …
-
-## Stop conditions   ← (loop/verify skills only) the terminal states.
-- **PASS** — …
-- **PAUSE** — … (hand back to a human)
-- **GIVE-UP** — … (bounded so the loop can't spin forever)
-
-## Composes with     ← which sibling skills this one calls or is called by.
-- calls ▶ `verification-report`
-- called by ◀ `feature-implement`
+## Purpose        One line: what this skill is for.
+## Inputs         The contract. Files/values this skill reads.
+## Outputs        The contract. Files this skill writes or emits.
+## Invariants     Hard rules this skill must never break.
+## Procedure      The numbered steps the agent follows.
+## Composes with  Which sibling skills this one calls / is called by.
 ```
 
-**Why this shape.** `Inputs`/`Outputs` make the hand-off explicit and greppable.
-`Invariants` pull the non-negotiables (SPEC protection, source-of-truth files) out
-of the prose where they're easy to miss. `Stop conditions` force every looping
-skill to declare how it terminates — VDD loops must be bounded. `Composes with`
-keeps the family graph honest as the roster grows. Non-looping skills (e.g.
-`vdd-bootstrap`) omit `Stop conditions`.
-
----
+`Inputs`/`Outputs` make the hand-off greppable; `Invariants` pull the
+non-negotiables out of the prose. (An earlier `Stop conditions` section existed
+for looping skills; with the loop out of VDD's scope, no current skill loops.)
 
 ## The roster
 
-Ordered by where they sit in the VDD flow: scaffold → author the standard → review
-the standard → run the loop → verify.
+Ordered by where they sit in the flow: scaffold → author → grade → hand off.
 
 | Skill | Role | Reads → Writes | Built? |
 |-------|------|----------------|:------:|
-| **`vdd-bootstrap`** | Scaffold a new VDD project from `templates/`. | `templates/**`, project name → `SPEC.md`, `CLAUDE.md`, `AGENTS.md`, dir skeleton | ⬜ |
-| **`goal-storming-facilitator`** | Run/transcribe a Goal Storming session; emit the verification standard. | scope + existing `SPEC.md` + `docs/01` → `goals.md`, `*.feature` (with `@eval` lines), `*.rubric.md?`, SPEC constraints (proposed), concept | ⬜ |
-| **`gherkin-review`** | Review a `.feature` (including `@eval` lines) against `gherkin-guidelines.md` and `evaluation-guidelines.md`. | `*.feature`, guidelines → findings report / inline suggestions | ⬜ |
-| **`rubric-review`** | Review a `.rubric.md` detail file against `evaluation-guidelines.md`. | `*.rubric.md`, `evaluation-guidelines.md` → findings report / inline suggestions | ⬜ |
-| **`spec-guardian`** | Enforce the SPEC.md protection rule. | a change touching `SPEC.md`, `SPEC.md` → blocks edit; writes `schema-change-proposal.md`; pauses | ⬜ |
-| **`feature-implement`** | Run the VDD loop for one unit. | `*.feature` (with `@eval` lines), `*.rubric.md?`, `SPEC.md`, `CLAUDE.md` → `requirements.md`, `plan.md`, `tasks.md`, code, `verification-report.md` | ✅ |
-| **`verification-report`** | Check an implementation against its standard; write the report. | `*.feature` (with `@eval` lines), `*.rubric.md?` (detail only), the code, project test tooling → `verification-report.md` | ✅ |
+| **`vdd-bootstrap`** | Scaffold VDD into a project: contract set, context files, `units/` — never clobbering what exists. | `templates/**`, `llm.txt`, guidelines, target project → project skeleton (or proposed additions) | ✅ |
+| **`goal-storming-facilitator`** | Run a Goal Storming session (live group, or solo Q&A — mode chosen at step 0); emit the standard. | scope + mode, existing `spec.md`, `docs/01`, templates → `<name>.goals`, `*.feature` (with `@eval`), ancillary files, `spec.md` constraints (proposed) | ✅ |
+| **`gherkin-review`** | Review a `.feature` (scenarios + `@eval`/`@verify-detail` lines) against both guidelines. | `*.feature`, guidelines → findings report (fixed table shape; report-only) | ✅ |
+| **`rubric-review`** | Review a `.rubric.md` against `evaluation-guidelines.md` *and* its owning `.feature`'s `@eval` contract. | `*.rubric.md`, its `.feature`, guideline → findings report (same table shape) | ✅ |
+| **`derivability-review`** | The "enough context?" check: four-questions pass + cold-derivation probe of the handoff set. | the handoff set only (`llm.txt`, `.goals`, `*.feature` + pointed files, `spec.md`) → derivability report (cold reading + gaps) | ✅ |
 
----
-
-## How they compose (the family graph)
+## How they compose
 
 ```
 vdd-bootstrap
-     │  (scaffolds the project once)
+     │  (scaffolds once)
      ▼
-goal-storming-facilitator ──┬──▶ gherkin-review   (lint the .feature)
-     │                      └──▶ rubric-review    (lint the .rubric.md)
-     │  (emits the reviewed verification standard)
+goal-storming-facilitator ──┬──▶ gherkin-review      (lint the .feature)
+     │                      ├──▶ rubric-review       (lint ancillary rubrics)
+     │                      └──▶ derivability-review (would a cold session
+     │                                                build the right thing?)
      ▼
-feature-implement ───────────────┐
-     │  each iteration:           │  on detecting a needed SPEC change:
-     │  calls ▶ verification-report│  calls ▶ spec-guardian → PAUSE
-     │           (validate + score)│
-     └── loops until PASS / PAUSE / GIVE-UP
+HANDOFF — a clean coding-agent session reads llm.txt + .goals + .feature +
+spec.md and builds, looping until the verifications pass. Not a VDD skill.
 ```
 
-Two composition facts worth pulling out, because they shape the build order:
+`derivability-review` is the family's most distinctive station: `gherkin-review`
+checks that a standard is *well-formed*; `derivability-review` checks that it is
+*sufficient* — that its verifications carry low enough variance and enough
+context for the builder VDD will never meet. Its natural mechanism is the
+round-trip probe from `evaluation-guidelines.md`: have a fresh session derive
+requirements from the standard alone, then diff against the authors' intent.
 
-1. **`verification-report` is both standalone and a sub-skill.** `feature-implement`
-   doesn't re-implement "run the checks" — it calls `verification-report` each
-   iteration. So the hard question *"how does Validation actually execute
-   deterministically, and how is Evaluation scored?"* lives in
-   **`verification-report`**, and `feature-implement` stays a thin loop around it.
+## Build status & what validation remains
 
-2. **The reviewers are pre-flight guards.** `gherkin-review` / `rubric-review` can
-   run inside `goal-storming-facilitator` (as it drafts) *and* inside
-   `feature-implement` (as a sanity check before building against a standard). They
-   never mutate the artifact; they report. Note: `gherkin-review` now covers both
-   the Gherkin scenarios *and* the `@eval` lines in the `.feature` — it's the
-   primary reviewer for the complete standard. `rubric-review` is narrower: it only
-   applies when a `*.rubric.md` detail file exists.
+All five skills are built (2026-07-12). How they were built differs, and the
+difference matters for how much to trust each:
 
----
+- `gherkin-review` went through the full VDD loop as the first dogfood unit
+  (`units/gherkin-review/` — ratified goals, a `.feature` standard, a
+  mechanical checker, 9/9 validation). It has earned the most trust.
+- The other four were **authored directly** against this family contract, not
+  dogfooded. They are consistent and complete on paper; none has run a real
+  session yet.
 
-## Build order
-
-Per the family design, the first vertical slice is the loop core — built as a pair
-because one calls the other:
-
-1. ✅ **`verification-report`** — the verifier. Settles how Validation executes
-   (deterministic: real BDD runner, scaffolded if absent, never self-certified) and
-   how Evaluation is scored (LLM-as-judge, thresholds hidden from the judge).
-   Everything else leans on this.
-2. ✅ **`feature-implement`** — the loop that orchestrates derive → implement →
-   *(verification-report)* → repeat, with bounded stop conditions (cap N=3 +
-   no-progress → PAUSE).
-
-Next, the front-of-loop and guards, roughly in order: `spec-guardian` (referenced by
-`feature-implement`, so wiring it up closes a live composition edge),
-`gherkin-review` / `rubric-review`, `goal-storming-facilitator`, and finally
-`vdd-bootstrap` (highest leverage, lowest novelty — mostly copies `templates/`).
+The outstanding validation work, in order of value: run `derivability-review`
+for real with the split-session protocol (one session authors a standard, a
+fresh one probes it); an end-to-end pilot of the whole flow (bootstrap → storm
+→ review → clean-session build) on a small real project; an independent
+re-score of the first dogfood's Evaluation layer (`units/gherkin-review/`
+FN-5).
 
 ---
 
-*This index defines the skill family as currently understood. Like the rest of VDD
-it's a working draft — if a skill's real Inputs/Outputs turn out different from the
-row above when it's built, fix the row. The contract table is only useful if it
-stays true.*
+*This index defines the family as currently understood. If a skill's real
+Inputs/Outputs turn out different when built, fix the row — the contract table
+is only useful if it stays true.*
