@@ -62,8 +62,9 @@ tight, behavior-focused, independently-runnable scenario.
 - In VDD, `.feature` files live in `units/[name]/[name].feature`. Large units may
   split across multiple `.feature` files by capability area — all live in the same
   unit folder. One `Feature` block per file, maximum.
-- The unit folder also holds `goals.md`, `@eval`-annotated `.feature` files, an
-  optional `.rubric.md`, and the agent working docs. Everything for a unit in one place.
+- The unit folder also holds `<name>.goals`, an optional `.rubric.md` and other
+  ancillary verification files, and whatever working docs the consuming coding
+  agent generates. Everything for a unit in one place.
 
 ---
 
@@ -210,6 +211,12 @@ describe the *same* output at different altitudes:
 If a `Then` can't be settled the same way by any competent checker, it's probably an
 evaluation, not a validation. Move it to an `@eval` line. (See `evaluation-guidelines.md`.)
 
+**The layer is defined by the nature of the check, not by what produces the
+behavior being checked.** A mechanical assertion over an LLM-produced output is
+still a validation. Run-to-run variance of the *subject* is a
+verification-protocol concern — state the protocol in the file header if it
+matters — not grounds to move the check to the Evaluation layer.
+
 ---
 
 ## Anti-patterns to avoid
@@ -240,6 +247,10 @@ evaluation, not a validation. Move it to an `@eval` line. (See `evaluation-guide
 # @eval-detail | [name].rubric.md  ← include only when criteria need anchor descriptions
 #
 # (Remove @eval lines if the unit has no BLUE cards — purely deterministic.)
+# @verify-detail | [path] | [what it provides]  ← one per ancillary verification
+#                          file (fixtures, eval sets, checkers) the standard
+#                          depends on — see evaluation-guidelines.md.
+# (Optional: state the verification method/protocol in prose here as well.)
 
 Feature: [Behavior area]
   As a [role]

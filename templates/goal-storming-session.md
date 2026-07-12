@@ -118,5 +118,5 @@ a breath, [Design Concept]."* If the story doesn't hang together, you're not don
 | 🟨 Validations + 🟥 Negatives | `units/<name>/<name>.feature` |
 | 🟦 Evaluations | `# @eval` lines in `units/<name>/<name>.feature` (+ `<name>.rubric.md` if criteria need anchor descriptions) |
 | ⬛ Constraints | `SPEC.md` |
-| 🟩 Goals | `units/<name>/goals.md` (also at top of `SPEC.md` / `README.md` at project scale) |
-| 🟪 Design Concept | top of `units/<name>/requirements.md` · or `SPEC.md` / `README.md` at project scale |
+| 🟩 Goals | `units/<name>/<name>.goals` (also at top of `SPEC.md` / `README.md` at project scale) |
+| 🟪 Design Concept | its section in `units/<name>/<name>.goals` · or `SPEC.md` / `README.md` at project scale |

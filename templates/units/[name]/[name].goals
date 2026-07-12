@@ -1,5 +1,5 @@
 <!--
-  goals.md — TEMPLATE. Create as units/<name>/goals.md.
+  [name].goals — TEMPLATE. Create as units/<name>/<name>.goals.
 
   The unit's goals and how you expect to verify them. Written early — before or
   alongside the .feature file. Loose enough for initial thinking; the .feature
@@ -8,7 +8,7 @@
   Delete these comments once filled in.
 -->
 
-# goals.md — [unit-name]
+# [unit-name].goals
 
 ## Goals
 

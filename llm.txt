@@ -1,0 +1,86 @@
+# llm.txt — VDD (Verification-Driven Development)
+
+This file is for you, the coding agent, in a project that uses VDD. It tells you
+what the VDD files are, what you are expected to do with them, and the contract
+that makes your "done" trustworthy. Read it once per session in any project that
+carries VDD artifacts.
+
+## What VDD is
+
+VDD is a standard for defining work by its verifications instead of its spec.
+A human (usually with an LLM facilitator, usually NOT you) ran a Goal Storming
+session and produced verification standards: what would prove the work correct.
+Your job is to build whatever satisfies those standards. The standard tells you
+when you are done; how you get there is yours.
+
+## The files you will find
+
+- `<unit>/<name>.feature` — **the source of truth and your done-signal.**
+  Gherkin scenarios are the Validation layer: deterministic, binary,
+  machine-runnable. `# @eval` comment lines in the same file are the Evaluation
+  layer: judgment-based criteria with a scale and threshold
+  (`# @eval | id | name | scale | threshold | description`). A `.feature`
+  should carry enough context to build from on its own; it may state its
+  verification method and link ancillary documents for depth.
+- `<unit>/<name>.goals` — the outcome of Goal Storming: the goals behind the
+  standard, verification intent, optionally a design concept and unit-relevant
+  constraints. Read it for the *why* behind the `.feature`.
+- Ancillary verification files — e.g. `<name>.rubric.md` (anchor descriptions
+  and judge protocol for rich `@eval` criteria, linked via `# @eval-detail`),
+  fixtures, evaluation sets, checker scripts. Present only when the standard
+  needs them, and declared in the `.feature` header, one line each:
+  `# @verify-detail | <path> | <what it provides>`. Whatever its format, each
+  answers four questions: what it verifies, on what inputs, by what method and
+  executor, and what counts as pass. Load everything the `.feature` points to.
+- `spec.md` / `SPEC.md` — project constraints. May read like a traditional
+  spec, but the constraints section is what binds you.
+- `gherkin-guidelines.md` / `evaluation-guidelines.md` — how the standards are
+  written; consult them if you are asked to review or draft one.
+
+Folder structure is loose by design: a feature lives in its own folder (named
+like a git branch, e.g. `units/password-reset/`); an initial project build-out
+is a folder with one subfolder per feature. Everything for a unit lives in its
+folder.
+
+## What you are expected to do
+
+1. Read the unit's `.feature` (all of them if several), its `.goals`, `spec.md`,
+   and any linked ancillary verification files.
+2. Build. Plan however you like — your working docs (requirements, plans, task
+   lists, reports) are your own business; keep them in the unit folder.
+3. Verify against the standard:
+   - **Validation:** execute the `.feature` scenarios with a real runner /
+     mechanical checks. The built system should be able to run its own
+     validations.
+   - **Evaluation:** have each `@eval` criterion scored by a judge (an LLM that
+     is not invested in the result — a fresh session or another model — or a
+     human). Score against the description and any rubric anchors.
+4. Loop until every scenario is green and every `@eval` criterion meets its
+   threshold — or until you are genuinely blocked, in which case stop and tell
+   the human what is blocking, against which scenario or criterion.
+
+## The contract (what makes your verdict count)
+
+- **The standard is read-only.** Never edit a `.feature`, `.goals`, or ancillary
+  verification file to make results pass. If the standard looks wrong or
+  unsatisfiable, stop and say so.
+- **Validation passes only via executed checks.** Never conclude a scenario
+  passes by reading the code and judging it correct.
+- **Evaluation judges are blind to thresholds.** Show the judge the input, the
+  output, and the criterion description — not the pass bar. Score first,
+  compare after.
+- **Gates are not averaged.** A failed PASS/FAIL criterion fails the layer
+  regardless of other scores.
+- **The loop is bounded.** Pick an iteration cap before you start. If the same
+  failures survive an iteration unchanged, you are stuck — stop and report
+  rather than spinning.
+- **`spec.md` is protected.** If satisfying the standard requires changing a
+  constraint, write a change proposal in the unit folder and pause for human
+  review. Never edit it yourself.
+- **Goals are ratified by humans.** You may propose changes to goals or
+  verifications; a human decides.
+
+## Attribution
+
+VDD is from the `vdd-loop` project by Justin Gibbs
+(https://github.com/justingibbs/vdd-loop), CC BY 4.0.

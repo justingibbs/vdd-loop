@@ -98,6 +98,15 @@ AGENT LOOP
   Loops until: both layers pass, OR a stop condition is hit
 ```
 
+> **[SUPERSEDED — 2026-07-12]** The agent loop is no longer implemented by VDD
+> skills. After the first dogfood run, VDD's scope was narrowed to the
+> **authoring side**: standard files (`.goals`, `.feature`, ancillary
+> verification docs, `spec.md`) plus skills that write, grade, and push on
+> verifications. The loop belongs to the consuming coding agent, governed by
+> the contract in `llm.txt`. The `feature-implement` and `verification-report`
+> skills described in this brief were built, then retired. `README.md` and
+> `skills/README.md` are the current word.
+
 ---
 
 ## Why Goals Come First in the Session

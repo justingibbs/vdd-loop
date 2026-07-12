@@ -3,10 +3,7 @@
 
   This is the "how we work" file: always-active context the agent reads every
   session. It changes rarely. Keep it short and durable — tooling rules,
-  conventions, the SPEC protection rule, and pointers to the verification guides.
-
-  (AGENTS.md sits beside this file as a thin pointer to it, so tools that look for
-  either name find the same guidance. Keep the content HERE; don't fork it.)
+  the VDD contract pointer, the SPEC.md protection rule.
 
   Delete these comments once filled in.
 -->
@@ -18,44 +15,40 @@ touching code or verification artifacts.
 
 ## The method: VDD
 
-This project uses **Verification-Driven Development**. The short version of the loop:
+This project uses **Verification-Driven Development**. Read **`llm.txt`** (copied
+from the vdd-loop repo) for the full contract; the short version:
 
-1. Read the verification standard: the unit's `.feature` file(s) (Validation
-   scenarios + `@eval` Evaluation criteria) and `SPEC.md` for constraints. If an
-   `@eval-detail` pointer exists, load the linked `.rubric.md` for anchor descriptions.
-2. Derive `requirements.md` → `plan.md` → `tasks.md` in `units/<name>/`.
-3. Implement.
-4. **Validate** deterministically against every `.feature` scenario.
-5. **Evaluate** against `@eval` criteria where they exist (and `.rubric.md` anchors
-   where linked).
-6. Write `units/<name>/verification-report.md`.
-7. Loop until both layers meet their standard, or a stop condition is hit.
-
-The `.feature` file is the source of truth — it contains both the Validation
-scenarios and the `@eval` Evaluation criteria. A `.rubric.md` may exist as optional
-detail expansion for rich criteria; it is equally read-only. Everything else in
-`units/<name>/` is agent-owned scaffolding — full freedom there.
+- Work is defined by verification standards, not specs. Each unit of work has a
+  folder holding `<name>.goals` (why) and `<name>.feature` (the standard:
+  Validation scenarios + `@eval` Evaluation criteria). The `.feature` is the
+  source of truth and tells you when you're done.
+- **Building:** read the unit's `.feature` + `.goals` + `SPEC.md` and any linked
+  verification files, then build however you judge best. Your working docs
+  (plans, task lists, notes, reports) are your own — keep them in the unit
+  folder.
+- **Verifying:** validations pass only via executed checks (real runner, real
+  assertions — never by inspection). `@eval` criteria are scored by a judge that
+  doesn't see the thresholds. Loop until the standard passes, with a bounded
+  iteration cap; if the same failures survive an iteration unchanged, stop and
+  report.
+- **Never weaken the standard to pass.** `.feature`, `.goals`, and ancillary
+  verification files are read-only. If the standard looks wrong, say so.
 
 ## SPEC.md is protected
 
-**Never edit `SPEC.md` without explicit human approval.** It is versioned and
-protected. If a feature requires a change to `SPEC.md` (a new constraint, a data
-model change, an ADR), do not edit it — write `units/<name>/schema-change-proposal.md`
-describing the needed change and **pause for human review.**
+**Never edit `SPEC.md` without explicit human approval.** If satisfying a
+standard requires changing a constraint, write
+`units/<name>/schema-change-proposal.md` and **pause for human review**.
 
-## Verification guides
+## Authoring verifications
 
-Write and review verification artifacts against these:
+When drafting or reviewing standards (with a human, via Goal Storming):
 
-- **Validation (`.feature` files):** follow `gherkin-guidelines.md`.
-- **Evaluation (`.rubric.md` files):** follow `evaluation-guidelines.md`.
-
-A verification is whatever credibly proves a goal — the guides document the common
-patterns and leave room to invent. Strive to make every verification *able to fail*.
+- **Validation (`.feature` scenarios):** follow `gherkin-guidelines.md`.
+- **Evaluation (`@eval` lines, `.rubric.md` detail):** follow `evaluation-guidelines.md`.
+- Humans ratify goals; you propose and challenge.
 
 ## Tooling and conventions
-
-<!-- Fill in your project's specifics. These are the rules the agent must not guess. -->
 
 - **Language / runtime:** [e.g. TypeScript on Node 20]
 - **Package manager:** [e.g. pnpm — do not use npm/yarn]
@@ -67,11 +60,12 @@ patterns and leave room to invent. Strive to make every verification *able to fa
 
 ## Where things live
 
-- `SPEC.md` — project constraints, architecture, versioned & protected.
-- `units/<name>/` — one folder per unit of work (named like a branch: `password-reset`,
-  `initial-build`). Contains everything for that unit:
-  - `goals.md` — goals and verification intent.
-  - `<name>.feature` — Validation scenarios + `@eval` Evaluation criteria (source of truth).
-  - `<name>.rubric.md` — optional Evaluation detail (anchor descriptions, judge protocol).
-  - `requirements.md`, `plan.md`, `tasks.md` — agent-generated working docs.
-  - `verification-report.md` — verifier output, updated each loop iteration.
+- `SPEC.md` — project constraints; may read like a traditional spec, but the
+  constraints section is what binds the agent. Versioned & protected.
+- `units/<name>/` — one folder per unit of work, named like a git branch
+  (`password-reset`, `initial-build`). A project build-out may hold feature
+  subfolders. Contains:
+  - `<name>.goals` — Goal Storming output: goals, verification intent, concept.
+  - `<name>.feature` — the verification standard (source of truth).
+  - `<name>.rubric.md` *(optional)* — Evaluation detail, linked via `@eval-detail`.
+  - whatever working docs the building agent generates — its own business.

@@ -23,8 +23,9 @@ VERIFICATION  ("what proves this is done?")
 Evaluation criteria come from Goal Storming's 🟦 BLUE cards. They live as `@eval`
 comment lines directly in the `.feature` file — one line per criterion, inline with
 the deterministic scenarios. A separate `.rubric.md` is optional expansion for
-criteria whose anchor descriptions can't fit inline. The verifier reads both and
-records the result in `verification-report.md`.
+criteria whose anchor descriptions can't fit inline. The consuming coding agent's
+verifier reads both; how it records results is its own business (see `llm.txt`
+for the contract it honors while judging).
 
 See **Inline evaluation: the `@eval` convention** below for the exact format.
 
@@ -185,8 +186,8 @@ Evaluation criteria live in the `.feature` file, not a separate file by default:
   the `.feature`.
 - **Only a `.rubric.md` exists when a criterion genuinely needs it.** Many
   evaluation criteria — especially simple gates — need nothing beyond an `@eval`
-  line. A pure-Validation feature has neither `@eval` lines nor a `.rubric.md`; its
-  `verification-report.md` notes "no Evaluation layer" by design.
+  line. A pure-Validation feature has neither `@eval` lines nor a `.rubric.md` —
+  it simply has no Evaluation layer, by design.
 
 ---
 
@@ -207,7 +208,7 @@ Gherkin parsers skip comments, so the file remains executable without modificati
 | Field | Rules | Examples |
 |---|---|---|
 | `id` | Alphanumeric, unique within the file, no spaces | `E1`, `faithfulness`, `tone` |
-| `name` | 2–4 words; used as the column header in the verification report | `Faithfulness`, `Tone gate` |
+| `name` | 2–4 words; used as the label in verification output | `Faithfulness`, `Tone gate` |
 | `scale` | Exactly one of: `0-5`, `0-10`, `PASS/FAIL`, `0-100` | `0-5`, `PASS/FAIL` |
 | `threshold` | `≥N` for numeric scales; `PASS` for PASS/FAIL | `≥4`, `≥3`, `PASS` |
 | `description` | One sentence: what the judge is assessing. What the judge sees. | `Summary uses only facts from source` |
@@ -260,6 +261,52 @@ When a unit folder holds several `.feature` files (`auth.feature`,
 naturally concerns. `verification-report` scans all `.feature` files in the unit
 folder to collect the full Evaluation picture — no duplication, no designated
 "primary" file.
+
+---
+
+## Ancillary verification files
+
+*Some verifications need more than fits in a scenario or an `@eval` line: an
+evaluation set, a fixture manifest, a checker script, a judge protocol, a
+reference corpus. These live in the unit folder as **ancillary verification
+files** — and VDD deliberately does not prescribe their format.*
+
+**The contract, not the format.** An ancillary verification file may be any
+shape — markdown, YAML, TSV, a script — but it must answer **four questions**:
+
+1. **What does it verify?** Which scenario(s), `@eval` criteria, or goal it serves.
+2. **On what inputs?** The cases or fixtures — a fixed set, if there is one.
+3. **By what method, and who executes?** A script, a BDD runner, an LLM judge,
+   a human reviewer.
+4. **What counts as pass?**
+
+If a file leaves one of these unanswered, the clean-session builder has to
+guess — which is exactly the variance `derivability-review` exists to catch.
+
+**Discovery: the `@verify-detail` pointer.** The `.feature` must declare every
+ancillary file its standard depends on — one header line each, generalizing
+`@eval-detail`:
+
+```
+# @verify-detail | <relative-path> | <one phrase: what it provides>
+```
+
+Example (from the `units/gherkin-review/` dogfood unit):
+
+```
+# @eval-detail   | dispute-summary.rubric.md
+# @verify-detail | fixtures/manifest.tsv | seeded-defect cases for the Scenario Outline
+# @verify-detail | check_validation.py   | mechanical runner for every scenario
+```
+
+Co-location is not discovery: a consuming agent will read the whole unit
+folder anyway, but the `.feature` should stand alone as the map of its own
+standard.
+
+**Formats are earned, not designed.** `.rubric.md` is the only ancillary format
+with a documented shape — it earned that by recurring. When another pattern
+recurs across real units (evaluation sets are the likely next candidate),
+document its shape then. Until then, the four questions are the standard.
 
 ---
 

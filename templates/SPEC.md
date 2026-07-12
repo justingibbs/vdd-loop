@@ -80,7 +80,10 @@ qualities any solution must hold to, expressed as constraints, not features.]
 
 [The BLACK cards. What any solution must respect regardless of approach: tooling
 limits, datastore choices, regulatory boundaries. Constraints, not designs —
-"must use the existing Postgres store," not the schema itself.]
+"must use the existing Postgres store," not the schema itself.
+
+This section is the part of SPEC.md that most binds the coding agent — the rest
+of the file is context; these are the boundaries no build may cross.]
 
 - [constraint]
 - [constraint]
