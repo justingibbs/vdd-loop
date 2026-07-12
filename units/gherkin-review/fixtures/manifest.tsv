@@ -1,0 +1,6 @@
+fixture	location_token	acceptable_citations
+fixture-unverifiable-then.feature	A confirmation email is sent after checkout	Steps: language and semantics;Anti-patterns to avoid
+fixture-red-no-absence.feature	A locked account never allows login	Positive and negative validations;Anti-patterns to avoid
+fixture-malformed-eval.feature	@eval	Inline evaluation: the @eval convention
+fixture-compound-scenario.feature	Updating the display name updates the profile and the audit log	Scenarios;Guiding principles;Steps: language and semantics
+fixture-ui-mechanics.feature	A visitor subscribes with a valid address	Scenarios;Anti-patterns to avoid

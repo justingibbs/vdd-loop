@@ -1,0 +1,62 @@
+# gherkin-review.goals
+
+*Output of the Goal Storming session held 2026-07-12 (owner + LLM). Goals ratified
+by the owner. This is the first dogfood unit — vdd-loop building its own next
+skill through its own loop. Friction observed along the way is logged in
+`field-notes.md`.*
+
+## Goals
+
+- 🟩 **G1** — An author of a `.feature` can find and fix what's wrong with their
+  verification standard without rereading the guidelines: every finding is
+  located, explained, and traceable to a specific guideline section.
+- 🟩 **G2** — Defects that would corrupt the downstream loop (unverifiable `Then`
+  steps, RED scenarios that don't assert the absence of the forbidden effect,
+  malformed `@eval` lines) are caught before the coding agent builds against
+  the standard.
+- 🟩 **G3** — A "no blocking findings" verdict is meaningful: the review can
+  genuinely fail a bad standard — it never rubber-stamps.
+
+## Verification intent
+
+- **G1** → deterministic: seeded-defect fixtures — each seeded violation must
+  appear in the findings, located and citing the right guideline section
+  (YELLOW, checked mechanically against a fixture manifest). Judgment: whether
+  findings are fixable *from their text alone* → `@eval` E1 (Actionability).
+- **G2** → deterministic: the fixture set includes exactly the loop-corrupting
+  defect classes (vague `Then`, RED-without-absence, malformed `@eval`) — same
+  YELLOW fixture checks cover it.
+- **G3** → deterministic: the clean exemplar must yield zero must-fix findings
+  *while the seeded fixtures yield at least one each* — the pair together proves
+  the verdict can go both ways. Judgment: findings separate must-fix from noise
+  → `@eval` E2 (Signal).
+- Cross-cutting: no invented rules — deterministic floor (every cited section
+  must exist in the guidelines, RED) under a judgment bar (the explanation
+  faithfully represents what the section says, `@eval` E3 gate).
+
+**Layer ruling from the session (owner):** the Validation/Evaluation split is
+defined by the *nature of the check*, not by what executes the subject. "The
+findings report contains the seeded defect" is mechanically assertable → YELLOW,
+even though an LLM produces the report. Run-to-run variance of the LLM subject is
+a test-engineering concern (protocol), not grounds to demote the check to the
+Evaluation layer.
+
+## Design Concept *(🟪)*
+
+> A lint pass for your verification standard — it tells you where the standard
+> can't be trusted, and never touches it.
+
+## Constraints *(⬛)*
+
+*vdd-loop has no `SPEC.md` of its own (see field-notes) — the constraint surface
+for this unit is `skills/README.md`, the family contract:*
+
+- The skill conforms to the shared SKILL.md family format (frontmatter +
+  Purpose / Inputs / Outputs / Invariants / Procedure / Composes with; no Stop
+  conditions — it is not a looping skill).
+- It reviews the **complete** standard: Gherkin scenarios *and* `@eval` lines
+  (it is the primary reviewer; `rubric-review` is the narrower sibling for
+  `.rubric.md` detail files).
+- **Report-only.** It never mutates the artifact under review.
+- It ends by stating what it produced and *offering* the next station — never
+  auto-invoking another skill.
