@@ -1,0 +1,42 @@
+# settle-up.goals
+
+*Output of the Goal Storming session held 2026-07-12 (owner + LLM, solo-Q&A
+mode). Goals ratified by the owner. This unit is also the first end-to-end
+pilot of VDD's clean-session handoff.*
+
+## Goals
+
+- 🟩 **G1** — A group that shared expenses can find out who pays whom — in as
+  few payments as possible — without doing any arithmetic themselves.
+- 🟩 **G2** — The suggested settlements are trustworthy: money is conserved to
+  the cent, and no one is ever told to pay more than they actually owe.
+- 🟩 **G3** — When the ledger can't be settled (malformed rows, missing
+  fields, non-numeric amounts), the user is told exactly what's wrong — and
+  nothing is suggested.
+
+## Verification intent
+
+- **G1** → deterministic: canonical ledgers with pinned expected payments;
+  a pair-matching case asserting the exact payment count; the `P − 1` bound in
+  `SPEC.md`. (True global minimality is NP-hard; the standard pins exact
+  outcomes for known cases rather than demanding the theoretical optimum.)
+- **G2** → deterministic: exact expected amounts in every scenario; a
+  float-hostile case (`$0.30` three ways) that breaks any binary-float
+  implementation; a RED property that no payment exceeds the payer's shortfall
+  and every creditor receives exactly their balance.
+- **G3** → deterministic: RED scenarios — malformed amount and missing
+  participants produce a line-numbered error on stderr, exit 1, and **no
+  settlement output at all** (the absence is asserted, not just the error).
+
+No Evaluation layer: every outcome here is deterministic — by design.
+
+## Design Concept *(🟪)*
+
+> The receipt pile in, the Venmo list out.
+
+## Constraints *(⬛ — full set in SPEC.md)*
+
+- Python 3.11+ stdlib only; `behave` as the BDD runner (dev-only, in a venv).
+- Money is integer cents internally — binary floats never touch a monetary value.
+- Deterministic output: payments sorted by payer, then payee.
+- CLI contract (invocation, output forms, error format) as pinned in `SPEC.md`.

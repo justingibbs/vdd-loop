@@ -36,6 +36,7 @@ All committed and pushed to `origin/main` (`git@github.com:justingibbs/vdd-loop.
 | **Skill family** | `skills/` — bootstrap, facilitator, gherkin-review, rubric-review, derivability-review | ✅ All five built 2026-07-12; only `gherkin-review` dogfooded. |
 | **Compare doc** | `docs/08-compare.md` | ✅ Written 2026-07-12; honest new-vs-inherited accounting. |
 | **First dogfood** | `units/gherkin-review/` | ✅ Run 1 PASS (9/9 validation, mechanical); field notes FN-1–FN-11. |
+| **End-to-end pilot** | `pilots/settle-up/` | ✅ PASS 2026-07-12: probe (8 risky gaps) → SPEC 1.1.0 → cold build 8/8 in 1 iteration → audit clean. Field notes FN-P1–P6. |
 | **Licensing** | `LICENSE` (Apache-2.0), `LICENSE-docs` (CC BY 4.0), `LICENSING.md` | ✅ Dual-license scheme. |
 | **Front door** | `README.md` | ✅ Status sections current as of this handoff. |
 | **Original brief** | `PROJECT_BRIEF.md` | ✅ Kept as a historical snapshot; partially annotated `[SUPERSEDED]`. |
@@ -65,19 +66,17 @@ All committed and pushed to `origin/main` (`git@github.com:justingibbs/vdd-loop.
 
 ## 4. What's next — not yet built (prioritized)
 
-*(Rewritten again later on 2026-07-12: all five skills and `docs/08-compare.md`
-are now built. What remains is validation, not construction.)*
+*(Rewritten a third time on 2026-07-12: the end-to-end pilot has now RUN and
+PASSED — see `pilots/settle-up/`. The flagship claim held: derivability probe
+found 8 risky gaps → standard tightened → cold builder went green in one
+iteration → independent audit clean. `derivability-review` ran split-session
+inside the pilot, closing the old items 1–2.)*
 
-1. **The end-to-end pilot — the most valuable thing left.** The flagship claim
-   (a clean session reads `.feature` + `.goals` + `spec.md` + `llm.txt` and
-   builds working software) has never been tested. Bootstrap a small real
-   project, goal-storm it, review, hand off to a genuinely fresh session, watch
-   it build and run the verifications. Expect a fresh crop of field notes.
-2. **Run `derivability-review` for real, split-session** (one session authors,
-   a fresh one probes — FN-8's protocol). Can be folded into the pilot.
-3. **Independent re-score of the dogfood's Evaluation layer.** `units/gherkin-review/verification-report.md` is self-scored (FN-5); a fresh session (or the owner) should re-judge E1–E3 from `runs/*.findings.md` cold.
-4. **Formally close the stale open questions** (§5.1, §5.4, §5.5) — likely one small edit each, not builds.
-5. **`METHODOLOGY.md` and `/docs/02`–`07`** — still best written last, after the pilot has generated real evidence.
+1. **Independent re-score of the dogfood's Evaluation layer.** `units/gherkin-review/verification-report.md` is self-scored (FN-5); a fresh session (or the owner) should re-judge E1–E3 from `runs/*.findings.md` cold. Small, and the last unproven claim from run 1.
+2. **Fold the pilot's friction back into the docs** (FN-P3): an `llm.txt` line about verifying `standard.checksums` when present; authoring guidance on stating an oracle's independence boundary; decide whether to pin an error-reason grammar.
+3. **A failure-mode pilot** (FN-P2): hand off a deliberately under-tightened standard and observe the loop's PAUSE/stuck states, which two green-first-try runs have never exercised. Also still unexercised: `rubric-review` in anger, live-group facilitation, an `@eval`-bearing build.
+4. **Formally close the stale open questions** (§5.1, §5.4, §5.5) — one small edit each.
+5. **`METHODOLOGY.md` and `/docs/02`–`07`** — now backed by two runs of real evidence; still best written after the failure-mode pilot rounds out the picture.
 
 ---
 

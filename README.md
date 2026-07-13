@@ -10,8 +10,11 @@ agent in a clean session builds from that standard and loops until it passes.**
 ---
 
 > ⚠️ **Status: early and experimental.** This is a working sketch, not a finished
-> product. It has been dogfooded exactly once (see `units/gherkin-review/`), and
-> that run reshaped it. Treat everything as a working draft, not a standard-standard.
+> product. It has survived two real runs — a dogfood (`units/gherkin-review/`,
+> which reshaped its scope) and an end-to-end pilot (`pilots/settle-up/`, which
+> validated the clean-session handoff: probe → tighten → cold build → green in
+> one iteration). Two runs is evidence, not proof — treat everything as a
+> working draft.
 
 ## The idea in a breath
 
@@ -121,15 +124,20 @@ skills/                       The authoring-side skill family, all five built:
                               gherkin-review, rubric-review, derivability-review.
 units/gherkin-review/         The first dogfood unit — VDD building its own skill,
                               with field notes on everything that bent.
+pilots/settle-up/             The first end-to-end pilot: bootstrap → goal storm →
+                              reviews → cold probe → clean-session build →
+                              8/8 green in one iteration. Reports + field notes.
 PROJECT_BRIEF.md / HANDOFF.md Historical snapshot / continuation brief.
 LICENSING.md                  Dual license: Apache-2.0 (code) / CC BY 4.0 (docs).
 ```
 
-**Built but not yet field-proven:** only `gherkin-review` has been through the
-VDD loop itself; the other four skills are authored, consistent, and untested
-by a real session. **Still to come:** an end-to-end pilot (the whole flow on a
-real project — the flagship claim has never been tested), `docs/02`–`07`, and
-`METHODOLOGY.md` (deliberately last). See [`skills/README.md`](skills/README.md).
+**Field-proven so far:** `gherkin-review` (dogfooded), `derivability-review` and
+the handoff contract (pilot — the probe found 8 risky gaps, closing them let a
+cold builder go green in one iteration), bootstrap and solo-mode goal storming
+(pilot, uneventful). **Not yet exercised:** the loop's failure states
+(PAUSE/stuck), `rubric-review` in anger, live-group facilitation. **Still to
+come:** `docs/02`–`07` and `METHODOLOGY.md` (deliberately last). See
+[`skills/README.md`](skills/README.md) and the two field-notes files.
 
 ## Getting oriented
 
